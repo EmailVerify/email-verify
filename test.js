@@ -1,24 +1,3 @@
-/*
-var verifier = require( './index.js' );
-
-verifier.verify("rob@below.io", function(info,err){
-  if( err ) console.log( err );
-  else console.log( info );
-});
-
-
-verifier.verify("bighappyworld@gmail.com", function(info,err){
-  if( err ) console.log( err );
-  else console.log( info );
-});
-
-
-verifier.verify("bubbles@below.io", function(info,err){
-  if( err ) console.log( err );
-  else console.log( info );
-});
-*/
-
 var Mocha = require('mocha'),
     fs = require('fs'),
     path = require('path');
