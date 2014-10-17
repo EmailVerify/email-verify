@@ -20,3 +20,14 @@ The basic flow is as follows:
 8. If they all validate, return an object with success: true. If any stage fails, the callback object will have success: false.
 
 This module has tests with Mocha. Run "npm test" and make sure you have a solid connection.
+
+Use:
+
+var verifier = require('email-verify');
+verifier.verify( 'anemail@domain.com', function( info, err ){
+  if( err ) console.log(err);
+  else{
+    console.log( "Success (T/F): " + info.success );
+    console.log( "Info: " + info.info );
+  }
+});
