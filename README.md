@@ -22,7 +22,7 @@ The basic flow is as follows:
 This module has tests with Mocha. Run "npm test" and make sure you have a solid connection.
 
 Use:
-
+`
 var verifier = require('email-verify');
 verifier.verify( 'anemail@domain.com', function( info, err ){
   if( err ) console.log(err);
@@ -31,3 +31,4 @@ verifier.verify( 'anemail@domain.com', function( info, err ){
     console.log( "Info: " + info.info );
   }
 });
+`
