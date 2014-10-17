@@ -1,7 +1,7 @@
 {
   "name": "email-verify",
   "version": "0.0.1",
-  "description": "A tool to verify an email address exits via an SMTP ping",
+  "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
     "email-validator": "1.0.1"
