@@ -3,11 +3,12 @@ SMTP Email Verification
 The module has one asynchronous method: verify( email, callback )
 
 The callback is a function( info, err ) that has an info object:
+```
 {
   success: boolean
   info: string
 }
-
+```
 The basic flow is as follows:
 
 1. Validate it is a proper email address
@@ -22,7 +23,8 @@ The basic flow is as follows:
 This module has tests with Mocha. Run "npm test" and make sure you have a solid connection.
 
 Use:
-`
+
+```
 var verifier = require('email-verify');
 verifier.verify( 'anemail@domain.com', function( info, err ){
   if( err ) console.log(err);
@@ -31,4 +33,4 @@ verifier.verify( 'anemail@domain.com', function( info, err ){
     console.log( "Info: " + info.info );
   }
 });
-`
+```
