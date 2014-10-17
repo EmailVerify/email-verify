@@ -1,0 +1,17 @@
+{
+  "name": "email-verify",
+  "version": "0.0.1",
+  "description": "A tool to verify an email address exits via an SMTP ping",
+  "main": "index.js",
+  "dependencies": {
+    "email-validator": "1.0.1",
+    "mocha": "1.21.5"
+    },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test"
+  },
+  "author": "Robert Oaks <rob@below.io> (http://below.io/)",
+  "license": "ISC",
+  "keywords": [ "email", "smtp","verify" ]
+}
