@@ -1,5 +1,17 @@
 SMTP Email Verification
 
+To install it globally
+
+```
+npm install -g email-verify
+```
+
+And then you can use it stand alone with the email-verify command and as many email addresses as you want to check.
+
+```
+email-verify addr1@domain.com addr2@anotherdomain.com
+```
+
 The module has one asynchronous method: verify( email, callback )
 
 The callback is a function( info, err ) that has an info object:

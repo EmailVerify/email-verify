@@ -19,6 +19,8 @@
     "type": "git",
     "url": "https://github.com/bighappyworld/email-verify"
   },
+  "preferGlobal": true,
+  "bin": { "email-verify": "./app.js" },
   "author": "Robert Oaks <rob@below.io> (http://below.io/)",
   "license": "ISC",
   "keywords": [ "email", "smtp","verify","validate" ]
