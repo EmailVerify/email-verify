@@ -12,6 +12,32 @@ And then you can use it stand alone with the email-verify command and as many em
 email-verify addr1@domain.com addr2@anotherdomain.com
 ```
 
+Using -d
+
+```
+email-verify -d domain.com addr1 addr2 addr3
+```
+
+Using -d -s, checking the standard email addresses
+
+```
+email-verify -d domain.com -s
+```
+
+Using -d -n, checking for variations of a name [-n firstname lastname]
+
+```
+email-verify -d domain.com -n firstname lastname
+```
+
+Using it in a more complicated way
+
+```
+email-verify -d domainA.com addr1 addr2 -n firstname1 lastname1 -d domainB -n firstname2 lastname2
+```
+
+Each time you use -d, it treats everything after it as that domain until another domain is used. Until you use -d, it treats it as there is no domain so you can't do -s or -n.
+
 The module has one asynchronous method: verify( email, callback )
 
 The callback is a function( info, err ) that has an info object:
@@ -19,6 +45,7 @@ The callback is a function( info, err ) that has an info object:
 {
   success: boolean
   info: string
+  addr: the address being verified
 }
 ```
 The basic flow is as follows:
