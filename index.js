@@ -3,7 +3,7 @@ module.exports.timeout = 1500;
 module.exports.verify = function( email, callback ){
   var validator = require( 'email-validator' );
   if( !validator.validate(email) ){
-      callback({ success: false, info: "Invalid Email Structure" }, null );
+      callback({ success: false, info: "Invalid Email Structure", addr: email }, null );
       return false;
   }
 
@@ -84,9 +84,11 @@ module.exports.verify = function( email, callback ){
         }).on('connect', function(data) {
 
         }).on('error', function(err) {
-          callback({ success: false, info: null }, err );
+          callback({ success: false, info: null, addr: email }, err );
         }).on('end', function() {
-          callback({ success: success, info: (email + " is " + (success ? "a valid" : "an invalid") + " address") }, null );
+          callback({ success: success,
+                     info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
+                     addr: email }, null );
         });
 
     }
