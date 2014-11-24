@@ -18,6 +18,7 @@ if (arguments.length === 0) {
 var addresses = [];
 var domain = null;
 var err_msg = null;
+var options = { port : 25, sender : "rob@below.io" };
 for( var i = 0 ; i < arguments.length ; i++ )
 {
   if( arguments[i] === '-d' ){
@@ -65,6 +66,15 @@ for( var i = 0 ; i < arguments.length ; i++ )
       addresses.push(val + domain);
     });
   }
+  else if( arguments[i] === '-sd' && arguments[i+1] ){
+    options.sender = arguments[++i];
+  }
+  else if( arguments[i] === '-p' && arguments[i+1] && arguments[i+1] % 1 === 0 ){
+    options.port = arguments[++i];
+  }
+  else if( arguments[i] === '-t' && arguments[i+1] && arguments[i+1] % 1 === 0 ){
+    options.timeout = arguments[++i];
+  }
   else if( domain ){
     addresses.push( arguments[i] + domain );
   }
@@ -79,7 +89,7 @@ if( err_msg ) console.log( err_msg );
 else{
     addresses.forEach( function (val, index, array ) {
       var verifier = require( './index.js' );
-      verifier.verify(val, function(info,err){
+      verifier.verify(val, options, function(info,err){
           if( !err && info.success ) console.log(info.addr);
       });
     });
