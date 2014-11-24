@@ -38,6 +38,9 @@ email-verify -d domainA.com addr1 addr2 -n firstname1 lastname1 -d domainB -n fi
 
 Each time you use -d, it treats everything after it as that domain until another domain is used. Until you use -d, it treats it as there is no domain so you can't do -s or -n.
 
+Other options supported are -p <port>, -t <timeout>, -sd <sender@email.com>
+
+
 The module has one asynchronous method: verify( email, callback )
 
 The callback is a function( info, err ) that has an info object:
