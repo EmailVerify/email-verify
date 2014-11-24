@@ -1,6 +1,19 @@
-module.exports.timeout = 1500;
 
-module.exports.verify = function( email, callback ){
+module.exports.verify = function( email, options, callback ){
+  // Handle optional parameters
+  if( !email || !options ) {
+    throw new Error( "Missing parameters in email-verify.verify()" );
+  }
+  else if (typeof callback === 'undefined' && options ) {
+    callback = options;
+    options = {};
+  }
+
+  // Default Values
+  if( options && !options.port ) options.port = 25;
+  if( options && !options.sender ) options.sender = "rob@below.io";
+  if( options && !options.timeout ) options.timeout = 0;
+
   var validator = require( 'email-validator' );
   if( !validator.validate(email) ){
       callback({ success: false, info: "Invalid Email Structure", addr: email }, null );
@@ -33,10 +46,18 @@ module.exports.verify = function( email, callback ){
         var stage = 0;
 
         var net = require( 'net' );
-        var socket = net.createConnection( 25, smtp );
+        var socket = net.createConnection( options.port, smtp );
         var success = false;
         var response = "";
         var completed = false;
+
+        if( options.timeout > 0 ){
+          socket.setTimeout(options.timeout, function(){
+            callback({ success: false,
+                     info: "Connection Timed Out",
+                     addr: email }, null );
+            socket.destroy() });
+        }
 
         socket.on('data', function(data) {
           response += data.toString();
@@ -54,7 +75,7 @@ module.exports.verify = function( email, callback ){
                           break;
                   case 1: if( response.indexOf('250') > -1 ){
                               // Connection Worked
-                              socket.write("MAIL FROM:<rob@below.io>\n",function(){ stage++; response = ""; });
+                              socket.write("MAIL FROM:<"+options.sender+">\n",function(){ stage++; response = ""; });
                           }
                           else{
                               socket.end();
