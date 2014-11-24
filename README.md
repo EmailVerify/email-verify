@@ -41,7 +41,7 @@ Each time you use -d, it treats everything after it as that domain until another
 Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_
 
 
-The module has one asynchronous method: verify( email, callback )
+The module has one asynchronous method: verify( email, _options_, callback )
 
 The callback is a function( info, err ) that has an info object:
 ```
@@ -51,6 +51,16 @@ The callback is a function( info, err ) that has an info object:
   addr: the address being verified
 }
 ```
+
+The options are:
+```
+{
+  port : integer, port to connect with defaults to 25
+  sender : email, sender address, defaults to my address
+  timeout : integer, socket timeout defaults to 0 which is no timeout
+}
+```
+
 The basic flow is as follows:
 
 1. Validate it is a proper email address
