@@ -27,9 +27,10 @@ module.exports.verify = function( email, options, callback ){
 
   // Get the MX Records to find the SMTP server
   dns.resolveMx(domain, function(err,addresses){
-    if( err || !addresses ) callback(null,err);
-
-    if( addresses && addresses.length <= 0 ){
+    if( err || (typeof addresses === 'undefined') ){
+      callback(null,err);
+    }
+    else if( addresses && addresses.length <= 0 ){
         callback({ success: false, info: "No MX Records" }, null );
     }
     else{
