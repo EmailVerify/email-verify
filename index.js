@@ -11,8 +11,9 @@ module.exports.verify = function( email, options, callback ){
 
   // Default Values
   if( options && !options.port ) options.port = 25;
-  if( options && !options.sender ) options.sender = "rob@below.io";
+  if( options && !options.sender ) options.sender = "name@example.org";
   if( options && !options.timeout ) options.timeout = 0;
+  if( options && !options.fqdn ) options.fqdn = "mail.example.org";
 
   var validator = require( 'email-validator' );
   if( !validator.validate(email) ){
@@ -68,7 +69,7 @@ module.exports.verify = function( email, options, callback ){
               switch(stage){
                   case 0: if( response.indexOf('220') > -1 ){
                               // Connection Worked
-                              socket.write("EHLO rob\n",function(){ stage++; response = ""; });
+                              socket.write("EHLO "+options.fqdn+"\n",function(){ stage++; response = ""; });
                           }
                           else{
                               socket.end();

@@ -18,7 +18,7 @@ if (arguments.length === 0) {
 var addresses = [];
 var domain = null;
 var err_msg = null;
-var options = { port : 25, sender : "rob@below.io" };
+var options = { port : 25, sender : "name@example.org", fdqn : "mail.example.org" };
 for( var i = 0 ; i < arguments.length ; i++ )
 {
   if( arguments[i] === '-d' ){
@@ -74,6 +74,9 @@ for( var i = 0 ; i < arguments.length ; i++ )
   }
   else if( arguments[i] === '-t' && arguments[i+1] && arguments[i+1] % 1 === 0 ){
     options.timeout = arguments[++i];
+  }
+  else if( arguments[i] === '-f' && arguments[i+1] ){
+    options.fdqn = arguments[++i];
   }
   else if( domain ){
     addresses.push( arguments[i] + domain );

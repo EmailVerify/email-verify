@@ -38,8 +38,9 @@ email-verify -d domainA.com addr1 addr2 -n firstname1 lastname1 -d domainB -n fi
 
 Each time you use -d, it treats everything after it as that domain until another domain is used. Until you use -d, it treats it as there is no domain so you can't do -s or -n.
 
-Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_
+Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_
 
+The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender are name@example.org and default for the FDQN is mail.example.org. Strongly suggested that you change these. (Previous ones used my email / domain, just removed that)
 
 The module has one asynchronous method: verify( email, _options_, callback )
 
@@ -56,8 +57,9 @@ The options are:
 ```
 {
   port : integer, port to connect with defaults to 25
-  sender : email, sender address, defaults to my address
+  sender : email, sender address, defaults to name@example.org
   timeout : integer, socket timeout defaults to 0 which is no timeout
+  fdqn : domain, used as part of the HELO, defaults to mail.example.org
 }
 ```
 
