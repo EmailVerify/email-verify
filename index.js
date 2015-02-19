@@ -69,7 +69,7 @@ module.exports.verify = function( email, options, callback ){
               switch(stage){
                   case 0: if( response.indexOf('220') > -1 ){
                               // Connection Worked
-                              socket.write("EHLO "+options.fqdn+"\n",function(){ stage++; response = ""; });
+                              socket.write("EHLO "+options.fqdn+"\r\n",function(){ stage++; response = ""; });
                           }
                           else{
                               socket.end();
@@ -77,7 +77,7 @@ module.exports.verify = function( email, options, callback ){
                           break;
                   case 1: if( response.indexOf('250') > -1 ){
                               // Connection Worked
-                              socket.write("MAIL FROM:<"+options.sender+">\n",function(){ stage++; response = ""; });
+                              socket.write("MAIL FROM:<"+options.sender+">\r\n",function(){ stage++; response = ""; });
                           }
                           else{
                               socket.end();
@@ -85,7 +85,7 @@ module.exports.verify = function( email, options, callback ){
                           break;
                   case 2: if( response.indexOf('250') > -1 ){
                               // MAIL Worked
-                              socket.write("RCPT TO:<" + email + ">\n",function(){ stage++; response = ""; });
+                              socket.write("RCPT TO:<" + email + ">\r\n",function(){ stage++; response = ""; });
                           }
                           else{
                               socket.end();
@@ -94,12 +94,14 @@ module.exports.verify = function( email, options, callback ){
                   case 3: if( response.indexOf('250') > -1 ){
                               // RCPT Worked
                               success = true;
-                              socket.end();
                           }
-                          else{
-                              socket.end();
-                          }
+                          stage++;
+                          response = "";
+                          // close the connection cleanly.
+                          socket.write("QUIT\r\n");
                           break;
+                  case 4: 
+                    socket.end();
               }
           }
 
