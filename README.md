@@ -88,3 +88,7 @@ verifier.verify( 'anemail@domain.com', function( info, err ){
   }
 });
 ```
+
+### Changes
+
+0.0.10 -> 0.0.11 : changed "CR" to "CRLF" as per SMTP Standard. Added a QUIT message so that the connection is closed from both ends. (thanks @Nomon)
