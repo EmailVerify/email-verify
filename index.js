@@ -1,22 +1,23 @@
 
-module.exports.verify = function( email, options, callback ){
+module.exports.verify = function (email, options, callback) {
   // Handle optional parameters
-  if( !email || !options ) {
-    throw new Error( "Missing parameters in email-verify.verify()" );
+  if (!email || !options) {
+    throw new Error("Missing parameters in email-verify.verify()");
   }
-  else if (typeof callback === 'undefined' && options ) {
+  else if (typeof callback === 'undefined' && options) {
     callback = options;
     options = {};
   }
 
   // Default Values
-  if( options && !options.port ) options.port = 25;
-  if( options && !options.sender ) options.sender = "name@example.org";
-  if( options && !options.timeout ) options.timeout = 0;
-  if( options && !options.fqdn ) options.fqdn = "mail.example.org";
+  if (options && !options.port) options.port = 25;
+  if (options && !options.sender) options.sender = "name@example.org";
+  if (options && !options.timeout) options.timeout = 0;
+  if (options && !options.fqdn) options.fqdn = "mail.example.org";
 
-  var validator = require( 'email-validator' );
-  if( !validator.validate(email) ){
+  var validator = require('email-validator');
+
+  if (!validator.validate(email)) {
       callback(null, { success: false, info: "Invalid Email Structure", addr: email });
       return false;
   }
@@ -27,19 +28,19 @@ module.exports.verify = function( email, options, callback ){
   var dns = require('dns');
 
   // Get the MX Records to find the SMTP server
-  dns.resolveMx(domain, function(err,addresses){
-    if( err || (typeof addresses === 'undefined') ){
+  dns.resolveMx(domain, function(err,addresses) {
+    if (err || (typeof addresses === 'undefined')) {
       callback(err, null);
     }
-    else if( addresses && addresses.length <= 0 ){
+    else if (addresses && addresses.length <= 0) {
         callback(null, { success: false, info: "No MX Records" });
     }
     else{
         // Find the lowest priority mail server
         var priority = 10000;
         var index = 0;
-        for( var i = 0 ; i < addresses.length ; i++ ){
-            if( addresses[i].priority < priority ){
+        for (var i = 0 ; i < addresses.length ; i++) {
+            if (addresses[i].priority < priority) {
                 priority = addresses[i].priority;
                 index = i;
             }
@@ -47,14 +48,14 @@ module.exports.verify = function( email, options, callback ){
         var smtp = addresses[index].exchange;
         var stage = 0;
 
-        var net = require( 'net' );
-        var socket = net.createConnection( options.port, smtp );
+        var net = require('net');
+        var socket = net.createConnection(options.port, smtp);
         var success = false;
         var response = "";
         var completed = false;
 
-        if( options.timeout > 0 ){
-          socket.setTimeout(options.timeout, function(){
+        if (options.timeout > 0) {
+          socket.setTimeout(options.timeout, function() {
             callback(null, { success: false,
                      info: "Connection Timed Out",
                      addr: email });
@@ -65,33 +66,33 @@ module.exports.verify = function( email, options, callback ){
           response += data.toString();
           completed = response.slice(-1) === '\n';
 
-          if( completed ) {
-              switch(stage){
-                  case 0: if( response.indexOf('220') > -1 ){
+          if (completed) {
+              switch(stage) {
+                  case 0: if (response.indexOf('220') > -1) {
                               // Connection Worked
-                              socket.write("EHLO "+options.fqdn+"\r\n",function(){ stage++; response = ""; });
+                              socket.write("EHLO "+options.fqdn+"\r\n",function() { stage++; response = ""; });
                           }
                           else{
                               socket.end();
                           }
                           break;
-                  case 1: if( response.indexOf('250') > -1 ){
+                  case 1: if (response.indexOf('250') > -1) {
                               // Connection Worked
-                              socket.write("MAIL FROM:<"+options.sender+">\r\n",function(){ stage++; response = ""; });
+                              socket.write("MAIL FROM:<"+options.sender+">\r\n",function() { stage++; response = ""; });
                           }
                           else{
                               socket.end();
                           }
                           break;
-                  case 2: if( response.indexOf('250') > -1 ){
+                  case 2: if (response.indexOf('250') > -1) {
                               // MAIL Worked
-                              socket.write("RCPT TO:<" + email + ">\r\n",function(){ stage++; response = ""; });
+                              socket.write("RCPT TO:<" + email + ">\r\n",function() { stage++; response = ""; });
                           }
                           else{
                               socket.end();
                           }
                           break;
-                  case 3: if( response.indexOf('250') > -1 ){
+                  case 3: if (response.indexOf('250') > -1) {
                               // RCPT Worked
                               success = true;
                           }
@@ -104,18 +105,16 @@ module.exports.verify = function( email, options, callback ){
                     socket.end();
               }
           }
-
-
         }).on('connect', function(data) {
 
         }).on('error', function(err) {
-          callback({ success: false, info: null, addr: email }, err );
+          callback({ success: false, info: null, addr: email }, err);
         }).on('end', function() {
-          callback(null, { success: success,
-                     info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
-                     addr: email });
+          callback(null, {
+            success: success,
+            info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
+            addr: email });
         });
-
     }
   });
   return true;
