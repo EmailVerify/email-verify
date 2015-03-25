@@ -17,7 +17,7 @@ module.exports.verify = function( email, options, callback ){
 
   var validator = require( 'email-validator' );
   if( !validator.validate(email) ){
-      callback({ success: false, info: "Invalid Email Structure", addr: email }, null );
+      callback(null, { success: false, info: "Invalid Email Structure", addr: email });
       return false;
   }
 
@@ -29,10 +29,10 @@ module.exports.verify = function( email, options, callback ){
   // Get the MX Records to find the SMTP server
   dns.resolveMx(domain, function(err,addresses){
     if( err || (typeof addresses === 'undefined') ){
-      callback(null,err);
+      callback(err, null);
     }
     else if( addresses && addresses.length <= 0 ){
-        callback({ success: false, info: "No MX Records" }, null );
+        callback(null, { success: false, info: "No MX Records" });
     }
     else{
         // Find the lowest priority mail server
@@ -55,9 +55,9 @@ module.exports.verify = function( email, options, callback ){
 
         if( options.timeout > 0 ){
           socket.setTimeout(options.timeout, function(){
-            callback({ success: false,
+            callback(null, { success: false,
                      info: "Connection Timed Out",
-                     addr: email }, null );
+                     addr: email });
             socket.destroy() });
         }
 
@@ -100,7 +100,7 @@ module.exports.verify = function( email, options, callback ){
                           // close the connection cleanly.
                           socket.write("QUIT\r\n");
                           break;
-                  case 4: 
+                  case 4:
                     socket.end();
               }
           }
@@ -111,9 +111,9 @@ module.exports.verify = function( email, options, callback ){
         }).on('error', function(err) {
           callback({ success: false, info: null, addr: email }, err );
         }).on('end', function() {
-          callback({ success: success,
+          callback(null, { success: success,
                      info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
-                     addr: email }, null );
+                     addr: email });
         });
 
     }
