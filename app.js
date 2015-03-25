@@ -92,8 +92,8 @@ if( err_msg ) console.log( err_msg );
 else{
     addresses.forEach( function (val, index, array ) {
       var verifier = require( './index.js' );
-      verifier.verify(val, options, function(info,err){
           if( !err && info.success ) console.log(info.addr);
       });
+    verifier.verify(val, options, function(err, info) {
     });
 }
