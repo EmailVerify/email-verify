@@ -45,7 +45,8 @@ The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender
 
 The module has one asynchronous method: verify( email, _options_, callback )
 
-The callback is a function( info, err ) that has an info object:
+#Callback
+The callback is a function(err, info) that has an info object:
 ```
 {
   success: boolean
@@ -84,7 +85,7 @@ Use:
 
 ```
 var verifier = require('email-verify');
-verifier.verify( 'anemail@domain.com', function( info, err ){
+verifier.verify( 'anemail@domain.com', function( err, info ){
   if( err ) console.log(err);
   else{
     console.log( "Success (T/F): " + info.success );
