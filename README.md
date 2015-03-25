@@ -1,12 +1,13 @@
-SMTP Email Verification
+#SMTP Email Verification
 
-To install it globally
+##Install
 
 ```
 npm install -g email-verify
 ```
 
-And then you can use it stand alone with the email-verify command and as many email addresses as you want to check.
+##Usage
+You can use it stand alone with the email-verify command and as many email addresses as you want to check.
 
 ```
 email-verify addr1@domain.com addr2@anotherdomain.com
@@ -53,6 +54,7 @@ The callback is a function( info, err ) that has an info object:
 }
 ```
 
+#Options
 The options are:
 ```
 {
@@ -62,6 +64,8 @@ The options are:
   fdqn : domain, used as part of the HELO, defaults to mail.example.org
 }
 ```
+
+#Flow
 
 The basic flow is as follows:
 
@@ -74,7 +78,7 @@ The basic flow is as follows:
 7. Send a RCPT TO message
 8. If they all validate, return an object with success: true. If any stage fails, the callback object will have success: false.
 
-This module has tests with Mocha. Run "npm test" and make sure you have a solid connection.
+This module has tests with Mocha. Run `npm test` and make sure you have a solid connection.
 
 Use:
 
