@@ -6,6 +6,10 @@
 npm install -g email-verify
 ```
 
+#### Important Note
+
+If you upgrade to 0.0.12 from a previous version, you will need to make minor changes in your code. The callback was made to be error first.
+
 ###Usage
 You can use it stand alone with the email-verify command and as many email addresses as you want to check.
 
@@ -97,3 +101,6 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 ### Changes
 
 0.0.10 -> 0.0.11 : changed "CR" to "CRLF" as per SMTP Standard. Added a QUIT message so that the connection is closed from both ends. (thanks @Nomon)
+
+0.0.11 -> 0.0.12 : some refactoring and styles from james075. important to note, the callback order was changed to be error first. if you upgrade to here, you will need to modify your existing code.
+
