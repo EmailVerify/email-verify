@@ -69,7 +69,7 @@ for (var i = 0 ; i < arguments.length ; i++) {
     options.port = arguments[++i];
   }
   else if (arguments[i] === '-t' && arguments[i+1] && arguments[i+1] % 1 === 0) {
-    options.timeout = arguments[++i];
+    options.timeout = parseInt(arguments[++i]);
   }
   else if (arguments[i] === '-f' && arguments[i+1]) {
     options.fdqn = arguments[++i];
