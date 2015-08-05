@@ -74,6 +74,9 @@ for (var i = 0 ; i < arguments.length ; i++) {
   else if (arguments[i] === '-f' && arguments[i+1]) {
     options.fdqn = arguments[++i];
   }
+  else if (arguments[i] === '-dns' && arguments[i+1]) {
+    options.dns = arguments[++i];
+  }
   else if (domain) {
     addresses.push(arguments[i] + domain);
   }
