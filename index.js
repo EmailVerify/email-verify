@@ -27,13 +27,14 @@ module.exports.verify = function (email, options, callback) {
 
   var dns = require('dns');
 
+
   // Get the MX Records to find the SMTP server
   dns.resolveMx(domain, function(err,addresses) {
     if (err || (typeof addresses === 'undefined')) {
       callback(err, null);
     }
     else if (addresses && addresses.length <= 0) {
-        callback(null, { success: false, info: "No MX Records" });
+      callback(null, { success: false, info: "No MX Records" });
     }
     else{
         // Find the lowest priority mail server
@@ -53,14 +54,24 @@ module.exports.verify = function (email, options, callback) {
         var success = false;
         var response = "";
         var completed = false;
+        var calledback = false;
 
         if (options.timeout > 0) {
           socket.setTimeout(options.timeout, function() {
-            callback(null, { success: false,
-                     info: "Connection Timed Out",
-                     addr: email });
-            socket.destroy() });
+            if( !calledback ){
+              calledback = true;
+              callback(null,
+                       {
+                          success: false,
+                          info: "Connection Timed Out",
+                          addr: email
+                       });
+            }
+            socket.destroy()
+          });
         }
+
+
 
         socket.on('data', function(data) {
           response += data.toString();
@@ -108,12 +119,18 @@ module.exports.verify = function (email, options, callback) {
         }).on('connect', function(data) {
 
         }).on('error', function(err) {
-          callback( err, { success: false, info: null, addr: email });
+          if( !calledback ){
+            calledback = true;
+            callback( err, { success: false, info: null, addr: email });
+          }
         }).on('end', function() {
-          callback(null, {
-            success: success,
-            info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
-            addr: email });
+          if( !calledback ){
+            calledback = true;
+            callback(null, {
+              success: success,
+              info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
+              addr: email });
+          }
         });
     }
   });
