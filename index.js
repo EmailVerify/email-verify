@@ -27,6 +27,19 @@ module.exports.verify = function (email, options, callback) {
 
   var dns = require('dns');
 
+  if( options.dns ){
+    try {
+      if( Array.isArray(options.dns) ){
+        dns.setServers(options.dns);
+      }
+      else{
+        dns.setServers([options.dns]);
+      }
+    }
+    catch(e){
+      throw new Error("Invalid DNS Options");
+    }
+  }
 
   // Get the MX Records to find the SMTP server
   dns.resolveMx(domain, function(err,addresses) {
