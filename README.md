@@ -8,7 +8,7 @@ npm install -g email-verify
 
 #### Important Note
 
-If you upgrade to 0.0.12 from a previous version, you will need to make minor changes in your code. The callback was made to be error first.
+If you upgrade to > 0.0.12 from a previous version, you will need to make minor changes in your code. The callback was made to be error first.
 
 ###Usage
 You can use it stand alone with the email-verify command and as many email addresses as you want to check.
@@ -43,7 +43,7 @@ email-verify -d domainA.com addr1 addr2 -n firstname1 lastname1 -d domainB -n fi
 
 Each time you use -d, it treats everything after it as that domain until another domain is used. Until you use -d, it treats it as there is no domain so you can't do -s or -n.
 
-Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_
+Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_, -dns _DNSIPADDRESS_
 
 The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender are name@example.org and default for the FDQN is mail.example.org. Strongly suggested that you change these. (Previous ones used my email / domain, just removed that)
 
@@ -67,6 +67,7 @@ The options are:
   sender : email, sender address, defaults to name@example.org
   timeout : integer, socket timeout defaults to 0 which is no timeout
   fdqn : domain, used as part of the HELO, defaults to mail.example.org
+  dns: ip address, or array of ip addresses (as strings), used to set the servers of the dns check
 }
 ```
 
@@ -104,3 +105,7 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 
 0.0.11 -> 0.0.12 : some refactoring and styles from james075. important to note, the callback order was changed to be error first. if you upgrade to here, you will need to modify your existing code.
 
+0.0.12 -> 0.0.13 : fix cli -t timeout option
+
+0.0.13 -> 0.0.14 : fix on error callback order
+                   added the capability to specify the DNS servers for the MX record checking programatically and via cli
