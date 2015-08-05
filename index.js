@@ -108,7 +108,7 @@ module.exports.verify = function (email, options, callback) {
         }).on('connect', function(data) {
 
         }).on('error', function(err) {
-          callback({ success: false, info: null, addr: email }, err);
+          callback( err, { success: false, info: null, addr: email });
         }).on('end', function() {
           callback(null, {
             success: success,
