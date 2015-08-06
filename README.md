@@ -109,3 +109,5 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 
 0.0.13 -> 0.0.14 : fix on error callback order
                    added the capability to specify the DNS servers for the MX record checking programatically and via cli
+
+0.0.14 -> 0.0.15 : prevent socket from writing after end event fires
