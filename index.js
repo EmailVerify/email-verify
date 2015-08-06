@@ -68,6 +68,7 @@ module.exports.verify = function (email, options, callback) {
         var response = "";
         var completed = false;
         var calledback = false;
+        var ended = false;
 
         if (options.timeout > 0) {
           socket.setTimeout(options.timeout, function() {
@@ -92,7 +93,7 @@ module.exports.verify = function (email, options, callback) {
 
           if (completed) {
               switch(stage) {
-                  case 0: if (response.indexOf('220') > -1) {
+                  case 0: if (response.indexOf('220') > -1 && !ended) {
                               // Connection Worked
                               socket.write("EHLO "+options.fqdn+"\r\n",function() { stage++; response = ""; });
                           }
@@ -100,7 +101,7 @@ module.exports.verify = function (email, options, callback) {
                               socket.end();
                           }
                           break;
-                  case 1: if (response.indexOf('250') > -1) {
+                  case 1: if (response.indexOf('250') > -1 && !ended) {
                               // Connection Worked
                               socket.write("MAIL FROM:<"+options.sender+">\r\n",function() { stage++; response = ""; });
                           }
@@ -108,7 +109,7 @@ module.exports.verify = function (email, options, callback) {
                               socket.end();
                           }
                           break;
-                  case 2: if (response.indexOf('250') > -1) {
+                  case 2: if (response.indexOf('250') > -1 && !ended) {
                               // MAIL Worked
                               socket.write("RCPT TO:<" + email + ">\r\n",function() { stage++; response = ""; });
                           }
@@ -123,7 +124,7 @@ module.exports.verify = function (email, options, callback) {
                           stage++;
                           response = "";
                           // close the connection cleanly.
-                          socket.write("QUIT\r\n");
+                          if(!ended) socket.write("QUIT\r\n");
                           break;
                   case 4:
                     socket.end();
@@ -132,11 +133,13 @@ module.exports.verify = function (email, options, callback) {
         }).on('connect', function(data) {
 
         }).on('error', function(err) {
+          ended = true;
           if( !calledback ){
             calledback = true;
             callback( err, { success: false, info: null, addr: email });
           }
         }).on('end', function() {
+          ended = true;
           if( !calledback ){
             calledback = true;
             callback(null, {
