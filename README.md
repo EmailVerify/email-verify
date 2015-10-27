@@ -67,7 +67,8 @@ The options are:
   sender : email, sender address, defaults to name@example.org
   timeout : integer, socket timeout defaults to 0 which is no timeout
   fdqn : domain, used as part of the HELO, defaults to mail.example.org
-  dns: ip address, or array of ip addresses (as strings), used to set the servers of the dns check
+  dns: ip address, or array of ip addresses (as strings), used to set the servers of the dns check,
+  ignore: set an ending response code integer to ignore, such as 450 for greylisted emails 
 }
 ```
 

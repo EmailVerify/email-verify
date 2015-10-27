@@ -14,6 +14,7 @@ module.exports.verify = function (email, options, callback) {
   if (options && !options.sender) options.sender = "name@example.org";
   if (options && !options.timeout) options.timeout = 0;
   if (options && !options.fqdn) options.fqdn = "mail.example.org";
+  if (options && (!options.ignore || typeof options.ignore !== "number")) options.ignore = false;
 
   var validator = require('email-validator');
 
@@ -117,7 +118,7 @@ module.exports.verify = function (email, options, callback) {
                               socket.end();
                           }
                           break;
-                  case 3: if (response.indexOf('250') > -1) {
+                  case 3: if (response.indexOf('250') > -1 || (options.ignore && response.indexOf(options.ignore) > -1)) {
                               // RCPT Worked
                               success = true;
                           }
