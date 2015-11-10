@@ -68,7 +68,7 @@ The options are:
   timeout : integer, socket timeout defaults to 0 which is no timeout
   fdqn : domain, used as part of the HELO, defaults to mail.example.org
   dns: ip address, or array of ip addresses (as strings), used to set the servers of the dns check,
-  ignore: set an ending response code integer to ignore, such as 450 for greylisted emails 
+  ignore: set an ending response code integer to ignore, such as 450 for greylisted emails
 }
 ```
 
@@ -112,3 +112,4 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
                    added the capability to specify the DNS servers for the MX record checking programatically and via cli
 
 0.0.14 -> 0.0.15 : prevent socket from writing after end event fires
+0.0.15 -> 0.0.16 : added an ignore option for ignoring greylisted responses
