@@ -84,7 +84,6 @@ for (var i = 0 ; i < arguments.length ; i++) {
     require('./methods/readfromfile.js')
       .getAddressFromTextFile(arguments[i+1])
       .forEach(function (val, index, array) {
-        console.log(val);
         addresses.push(val);
       });
     break; // immediately exit to prevent adding the filename itself to the addresses vars
