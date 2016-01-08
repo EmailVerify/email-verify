@@ -80,6 +80,16 @@ for (var i = 0 ; i < arguments.length ; i++) {
   else if (domain) {
     addresses.push(arguments[i] + domain);
   }
+  else if (arguments[i] === '-file' && arguments[i+1]){
+    require('./methods/readfromfile.js')
+      .getAddressFromTextFile(arguments[i+1])
+      .forEach(function (val, index, array) {
+        console.log(val);
+        addresses.push(val);
+      });
+    break; // immediately exit to prevent adding the filename itself to the addresses vars
+  }
+
   else {
     addresses.push(arguments[i]);
   }
