@@ -80,7 +80,7 @@ for (var i = 0 ; i < arguments.length ; i++) {
   else if (domain) {
     addresses.push(arguments[i] + domain);
   }
-  else if (arguments[i] === '-file'){
+  else if (arguments[i] === '-file' || arguments[i] === '--file'){
     // check arguments filename supplied?
     if (!arguments[i+1]) {
       throw new Error("You must supplied the path to the file.");
