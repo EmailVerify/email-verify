@@ -1,16 +1,17 @@
 {
   "name": "email-verify",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
-    "email-validator": "1.0.1"
-    },
+    "email-validator": "1.0.1",
+    "lodash": "^4.0.0"
+  },
   "devDependencies": {
     "mocha": "1.21.5"
   },
   "bugs": {
-    "url" : "https://github.com/bighappyworld/email-verify/issues"
+    "url": "https://github.com/bighappyworld/email-verify/issues"
   },
   "scripts": {
     "test": "node test"
@@ -20,8 +21,15 @@
     "url": "https://github.com/bighappyworld/email-verify"
   },
   "preferGlobal": true,
-  "bin": { "email-verify": "./app.js" },
+  "bin": {
+    "email-verify": "./app.js"
+  },
   "author": "Robert Oaks <rob@below.io> (http://below.io/)",
   "license": "ISC",
-  "keywords": [ "email", "smtp","verify","validate" ]
+  "keywords": [
+    "email",
+    "smtp",
+    "verify",
+    "validate"
+  ]
 }

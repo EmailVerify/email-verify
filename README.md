@@ -43,9 +43,11 @@ email-verify -d domainA.com addr1 addr2 -n firstname1 lastname1 -d domainB -n fi
 
 Each time you use -d, it treats everything after it as that domain until another domain is used. Until you use -d, it treats it as there is no domain so you can't do -s or -n.
 
-Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_, -dns _DNSIPADDRESS_
+Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_, -dns _DNSIPADDRESS_, --file / -file _FILEPATH_
 
 The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender are name@example.org and default for the FDQN is mail.example.org. Strongly suggested that you change these. (Previous ones used my email / domain, just removed that)
+
+
 
 The module has one asynchronous method: verify( email, _options_, callback )
 
@@ -113,3 +115,4 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 
 0.0.14 -> 0.0.15 : prevent socket from writing after end event fires
 0.0.15 -> 0.0.16 : added an ignore option for ignoring greylisted responses
+0.0.16 -> 0.0.17 : sancowinx added a file option for the command line
