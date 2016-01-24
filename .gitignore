@@ -10,3 +10,6 @@ logs
 pids
 *.pid
 *.seed
+
+# Text file containing address (Testing)
+*.txt

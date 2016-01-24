@@ -80,6 +80,20 @@ for (var i = 0 ; i < arguments.length ; i++) {
   else if (domain) {
     addresses.push(arguments[i] + domain);
   }
+  else if (arguments[i] === '-file' || arguments[i] === '--file'){
+    // check arguments filename supplied?
+    if (!arguments[i+1]) {
+      throw new Error("You must supplied the path to the file.");
+    } else {
+      require('./methods/readfromfile.js')
+        .getAddressFromTextFile(arguments[i+1])
+        .forEach(function (val, index, array) {
+          addresses.push(val);
+        });
+      break; // immediately exit to prevent adding the filename itself to the addresses vars
+    }
+  }
+
   else {
     addresses.push(arguments[i]);
   }
