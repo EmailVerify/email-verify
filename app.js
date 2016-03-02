@@ -77,6 +77,9 @@ for (var i = 0 ; i < arguments.length ; i++) {
   else if (arguments[i] === '-dns' && arguments[i+1]) {
     options.dns = arguments[++i];
   }
+  else if (arguments[i] === '-c' && arguments[i+1]) {
+    options.concurrency = parseInt(arguments[++i]);
+  }
   else if (domain) {
     addresses.push(arguments[i] + domain);
   }
@@ -103,12 +106,17 @@ if (err_msg) {
   console.log(err_msg);
 }
 else {
-  addresses.forEach(function (val, index, array) {
-    var verifier = require('./index.js');
-    verifier.verify(val, options, function (err, info) {
-      if (!err && info.success) {
-        console.log(info.addr);
-      }
+  var Promise = require("bluebird");
+  var verifier = require('./index.js');
+        
+  Promise.map(addresses, function(val) {
+    return new Promise(function (resolve, reject) {
+      verifier.verify(val, options, function (err, info) {
+        if (!err && info.success) {
+          console.log(info.addr);
+        }
+        resolve();
+      });
     });
-  });
+  }, {concurrency: options.concurrency});
 }
