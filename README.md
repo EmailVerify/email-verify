@@ -43,7 +43,7 @@ email-verify -d domainA.com addr1 addr2 -n firstname1 lastname1 -d domainB -n fi
 
 Each time you use -d, it treats everything after it as that domain until another domain is used. Until you use -d, it treats it as there is no domain so you can't do -s or -n.
 
-Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_, -dns _DNSIPADDRESS_, --file / -file _FILEPATH_
+Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f _FDQN_, -dns _DNSIPADDRESS_, -c _concurrency_, --file / -file _FILEPATH_
 
 The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender are name@example.org and default for the FDQN is mail.example.org. Strongly suggested that you change these. (Previous ones used my email / domain, just removed that)
 
