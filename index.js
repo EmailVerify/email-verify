@@ -24,7 +24,7 @@ module.exports.verify = function (email, options, callback) {
   }
 
   // Get the domain of the email address
-  var domain = email.split(/[@]/)[1];
+  var domain = email.split(/[@]/).splice(-1)[0].toLowerCase();
 
   var dns = require('dns');
 
