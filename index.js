@@ -66,6 +66,7 @@ module.exports.verify = function (email, options, callback) {
         var net = require('net');
         var socket = net.createConnection(options.port, smtp);
         var success = false;
+        var tryagain = false;
         var response = "";
         var completed = false;
         var calledback = false;
@@ -99,6 +100,8 @@ module.exports.verify = function (email, options, callback) {
                               socket.write("EHLO "+options.fqdn+"\r\n",function() { stage++; response = ""; });
                           }
                           else{
+                              if (response.indexOf('421') > -1 || response.indexOf('450') > -1 || response.indexOf('451') > -1)
+                                  tryagain = true;
                               socket.end();
                           }
                           break;
@@ -137,7 +140,7 @@ module.exports.verify = function (email, options, callback) {
           ended = true;
           if( !calledback ){
             calledback = true;
-            callback( err, { success: false, info: null, addr: email });
+            callback( err, { success: false, info: null, addr: email ,tryagain: tryagain});
           }
         }).on('end', function() {
           ended = true;
@@ -146,7 +149,7 @@ module.exports.verify = function (email, options, callback) {
             callback(null, {
               success: success,
               info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
-              addr: email });
+              addr: email, tryagain: tryagain});
           }
         });
     }
