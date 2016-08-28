@@ -12,7 +12,8 @@ var addresses = [],
   options = {
     port : 25,
     sender : 'name@example.org',
-    fdqn : 'mail.example.org'
+    fdqn : 'mail.example.org',
+    concurrency: 2
   };
 
 //todo: code refactoring
@@ -110,8 +111,10 @@ else {
   var verifier = require('./index.js');
         
   Promise.map(addresses, function(val) {
+    let individualOptions = Object.assign({email:val},options)
+
     return new Promise(function (resolve, reject) {
-      verifier.verify(val, options, function (err, info) {
+      verifier.verify(individualOptions, function (err, info) {
         if (!err && info.success) {
           console.log(info.addr);
         }

@@ -1,8 +1,8 @@
 'use strict'
 
-import validator from 'email-validator'
-import dns from 'dns'
-import net from 'net'
+let validator = require('email-validator'),
+    dns = require('dns'),
+    net = require('net')
 
 const defaultOptions = {
   port: 25,
@@ -25,7 +25,6 @@ const errors = {
 
   }
 }
-
 
 function optionsDefaults(options) {
   if( !options ) options = {}
@@ -54,7 +53,7 @@ function dnsConfig(options){
 
 */
 
-export function verify(email,options,callback){
+module.exports.verify = function verify(email,options,callback){
   let params = {}
   let args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments))
 
@@ -77,16 +76,16 @@ export function verify(email,options,callback){
   if( !params.options ) throw new Error(errors.missing.options)
   if( !params.callback ) throw new Error(errors.missing.callback)
 
-  if( !validator.validate(email) ) return callback(null, { success: false, info: "Invalid Email Structure", addr: email })
+  if( !validator.validate(params.email) ) return params.callback(null, { success: false, info: "Invalid Email Structure", addr: email, params: params })
 
-  if( options.dns ) dnsConfig(options)
+  if( params.options.dns ) dnsConfig(params.options)
 
   startDNSQueries(params)
 
 }
 
 function startDNSQueries(params){
-  let domain = email.split(/[@]/).splice(-1)[0].toLowerCase()
+  let domain = params.email.split(/[@]/).splice(-1)[0].toLowerCase()
 
 
 
@@ -100,41 +99,6 @@ function startDNSQueries(params){
     else{
 
       params.addresses = addresses
-        // Find the lowest priority mail server
-        let priority = 10000;
-        let index = 0;
-        for (let i = 0 ; i < addresses.length ; i++) {
-            if (addresses[i].priority < priority) {
-                priority = addresses[i].priority;
-                index = i;
-            }
-        }
-        let smtp = addresses[index].exchange;
-        let stage = 0;
-
-        let net = require('net');
-        let socket = net.createConnection(options.port, smtp);
-        let success = false;
-        let tryagain = false;
-        let response = "";
-        let completed = false;
-        let calledback = false;
-        let ended = false;
-
-        if (options.timeout > 0) {
-          socket.setTimeout(options.timeout, function() {
-            if( !calledback ){
-              calledback = true;
-              callback(null,
-                       {
-                          success: false,
-                          info: "Connection Timed Out",
-                          addr: email
-                       });
-            }
-            socket.destroy()
-          });
-        }
 
       // Find the lowest priority mail server
       let priority = 10000,
@@ -146,7 +110,7 @@ function startDNSQueries(params){
             lowestPriorityIndex = i
         }
       }
-        
+
       params.options.smtp = addresses[lowestPriorityIndex].exchange
 
       beginSMTPQueries(params)
@@ -162,7 +126,8 @@ function beginSMTPQueries(params){
       success = false,
       response = '',
       completed = false,
-      ended = false
+      ended = false,
+      tryagain = false
 
   let socket = net.createConnection(params.options.port, params.options.smtp)
 
@@ -192,7 +157,7 @@ function beginSMTPQueries(params){
         switch(stage) {
             case 0: if (response.indexOf('220') > -1 && !ended) {
                         // Connection Worked
-                        socket.write("EHLO "+options.fqdn+"\r\n",function() { stage++; response = ""; });
+                        socket.write("EHLO "+params.options.fqdn+"\r\n",function() { stage++; response = ""; });
                     }
                     else{
                         if (response.indexOf('421') > -1 || response.indexOf('450') > -1 || response.indexOf('451') > -1)
@@ -202,7 +167,7 @@ function beginSMTPQueries(params){
                     break;
             case 1: if (response.indexOf('250') > -1 && !ended) {
                         // Connection Worked
-                        socket.write("MAIL FROM:<"+options.sender+">\r\n",function() { stage++; response = ""; });
+                        socket.write("MAIL FROM:<"+params.options.sender+">\r\n",function() { stage++; response = ""; });
                     }
                     else{
                         socket.end();
@@ -210,13 +175,13 @@ function beginSMTPQueries(params){
                     break;
             case 2: if (response.indexOf('250') > -1 && !ended) {
                         // MAIL Worked
-                        socket.write("RCPT TO:<" + email + ">\r\n",function() { stage++; response = ""; });
+                        socket.write("RCPT TO:<" + params.email + ">\r\n",function() { stage++; response = ""; });
                     }
                     else{
                         socket.end();
                     }
                     break;
-            case 3: if (response.indexOf('250') > -1 || (options.ignore && response.indexOf(options.ignore) > -1)) {
+            case 3: if (response.indexOf('250') > -1 || (params.options.ignore && response.indexOf(params.options.ignore) > -1)) {
                         // RCPT Worked
                         success = true;
                     }
@@ -230,7 +195,7 @@ function beginSMTPQueries(params){
         }
 
     }
-  }
+  })
 
   socket.on('connect', function(data) {
 
