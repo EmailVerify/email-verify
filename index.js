@@ -1,155 +1,207 @@
+'use strict'
 
-module.exports.verify = function (email, options, callback) {
-  // Handle optional parameters
-  if (!email || !options) {
-    throw new Error("Missing parameters in email-verify.verify()");
+import validator from 'email-validator'
+import dns from 'dns'
+import net from 'net'
+
+const defaultOptions = {
+  port: 25,
+  sender: 'name@example.org',
+  timeout: 0,
+  fqdn: 'mail.example.org',
+  ignore: false
+}
+
+const errors = {
+  missing: {
+    email: 'Missing email parameter',
+    options: 'Missing options parameter',
+    callback: 'Missing callback function'
+  },
+  invalid: {
+    email: 'Invalid Email Structure'
+  },
+  exception: {
+
   }
-  else if (typeof callback === 'undefined' && options) {
-    callback = options;
-    options = {};
+}
+
+
+function optionsDefaults(options) {
+  if( !options ) options = {}
+  Object.keys(defaultOptions).forEach(function(key){
+    if(options && !options[key]) options[key] = defaultOptions[key]
+  })
+  return options
+}
+
+function dnsConfig(options){
+  try {
+    if( Array.isArray(options.dns) ) dns.setServers(options.dns)
+    else dns.setServers([options.dns])
   }
-
-  // Default Values
-  if (options && !options.port) options.port = 25;
-  if (options && !options.sender) options.sender = "name@example.org";
-  if (options && !options.timeout) options.timeout = 0;
-  if (options && !options.fqdn) options.fqdn = "mail.example.org";
-  if (options && (!options.ignore || typeof options.ignore !== "number")) options.ignore = false;
-
-  var validator = require('email-validator');
-
-  if (!validator.validate(email)) {
-      callback(null, { success: false, info: "Invalid Email Structure", addr: email });
-      return false;
+  catch(e){
+    throw new Error("Invalid DNS Options");
   }
+}
 
-  // Get the domain of the email address
-  var domain = email.split(/[@]/)[1];
+/*
+  Ideally you give the arguments as in the function signature. However, other valid signatures would include:
 
-  var dns = require('dns');
+  email,callback (using default options, not advised)
 
-  if( options.dns ){
-    try {
-      if( Array.isArray(options.dns) ){
-        dns.setServers(options.dns);
-      }
-      else{
-        dns.setServers([options.dns]);
-      }
+  options,callback (using options.email for the email)
+
+*/
+
+export function verify(email,options,callback){
+  let params = {}
+  let args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments))
+
+  args.forEach(function(arg){
+    if( typeof arg === 'string' ){
+      params.email = arg
     }
-    catch(e){
-      throw new Error("Invalid DNS Options");
+    else if( typeof arg === 'object' ){
+      params.options = arg
     }
-  }
+    else if( typeof arg === 'function' ){
+      params.callback = arg
+    }
+  })
 
-  // Get the MX Records to find the SMTP server
-  dns.resolveMx(domain, function(err,addresses) {
+  if( !params.email && params.options.email && typeof params.options.email === 'string' ) params.email = params.options.email
+  params.options = optionsDefaults(params.options)
+
+  if( !params.email ) throw new Error(errors.missing.email)
+  if( !params.options ) throw new Error(errors.missing.options)
+  if( !params.callback ) throw new Error(errors.missing.callback)
+
+  if( !validator.validate(email) ) return callback(null, { success: false, info: "Invalid Email Structure", addr: email })
+
+  if( options.dns ) dnsConfig(options)
+
+  startDNSQueries(params)
+
+}
+
+function startDNSQueries(params){
+  let domain = params.email.split(/[@]/)[1]
+  dns.resolveMx(domain,(err,addresses) => {
     if (err || (typeof addresses === 'undefined')) {
-      callback(err, null);
+      params.callback(err, null);
     }
     else if (addresses && addresses.length <= 0) {
-      callback(null, { success: false, info: "No MX Records" });
+      params.callback(null, { success: false, info: "No MX Records" });
     }
     else{
-        // Find the lowest priority mail server
-        var priority = 10000;
-        var index = 0;
-        for (var i = 0 ; i < addresses.length ; i++) {
-            if (addresses[i].priority < priority) {
-                priority = addresses[i].priority;
-                index = i;
-            }
-        }
-        var smtp = addresses[index].exchange;
-        var stage = 0;
+      params.addresses = addresses
 
-        var net = require('net');
-        var socket = net.createConnection(options.port, smtp);
-        var success = false;
-        var response = "";
-        var completed = false;
-        var calledback = false;
-        var ended = false;
+      // Find the lowest priority mail server
+      let priority = 10000,
+          lowestPriorityIndex = 0
 
-        if (options.timeout > 0) {
-          socket.setTimeout(options.timeout, function() {
-            if( !calledback ){
-              calledback = true;
-              callback(null,
-                       {
-                          success: false,
-                          info: "Connection Timed Out",
-                          addr: email
-                       });
-            }
-            socket.destroy()
-          });
-        }
-
-
-
-        socket.on('data', function(data) {
-          response += data.toString();
-          completed = response.slice(-1) === '\n';
-
-          if (completed) {
-              switch(stage) {
-                  case 0: if (response.indexOf('220') > -1 && !ended) {
-                              // Connection Worked
-                              socket.write("EHLO "+options.fqdn+"\r\n",function() { stage++; response = ""; });
-                          }
-                          else{
-                              socket.end();
-                          }
-                          break;
-                  case 1: if (response.indexOf('250') > -1 && !ended) {
-                              // Connection Worked
-                              socket.write("MAIL FROM:<"+options.sender+">\r\n",function() { stage++; response = ""; });
-                          }
-                          else{
-                              socket.end();
-                          }
-                          break;
-                  case 2: if (response.indexOf('250') > -1 && !ended) {
-                              // MAIL Worked
-                              socket.write("RCPT TO:<" + email + ">\r\n",function() { stage++; response = ""; });
-                          }
-                          else{
-                              socket.end();
-                          }
-                          break;
-                  case 3: if (response.indexOf('250') > -1 || (options.ignore && response.indexOf(options.ignore) > -1)) {
-                              // RCPT Worked
-                              success = true;
-                          }
-                          stage++;
-                          response = "";
-                          // close the connection cleanly.
-                          if(!ended) socket.write("QUIT\r\n");
-                          break;
-                  case 4:
-                    socket.end();
-              }
+      for (let i = 0 ; i < addresses.length ; i++) {
+          if (addresses[i].priority < priority) {
+              priority = addresses[i].priority;
+              lowestPriorityIndex = i;
           }
-        }).on('connect', function(data) {
+      }
 
-        }).on('error', function(err) {
-          ended = true;
-          if( !calledback ){
-            calledback = true;
-            callback( err, { success: false, info: null, addr: email });
-          }
-        }).on('end', function() {
-          ended = true;
-          if( !calledback ){
-            calledback = true;
-            callback(null, {
-              success: success,
-              info: (email + " is " + (success ? "a valid" : "an invalid") + " address"),
-              addr: email });
-          }
-        });
+      params.options.smtp = addresses[lowestPriorityIndex].exchange
+
+      beginSMTPQueries(params)
     }
-  });
-  return true;
+
+
+  })
 }
+
+function beginSMTPQueries(params){
+
+  let stage = 0,
+      success = false,
+      response = '',
+      completed = false,
+      ended = false
+
+  let socket = net.createConnection(params.options.port, params.options.smtp)
+
+  let callback = (err,object) => {
+    callback = () => {} // multiple sources could call the callback, replace the function immediately to prevent it from being called twice
+    ended = true
+    return params.callback(err,object)
+  }
+
+  let advanceToNextStage = () => {
+    stage++
+    response = ''
+  }
+
+  if( params.options.timeout > 0 ){
+    socket.setTimeout(params.options.timeout,() => {
+      callback(null,{ success: false, info: "Connection Timed Out", addr: params.email })
+      socket.destroy()
+    })
+  }
+
+  socket.on('data', function(data) {
+    response += data.toString()
+    completed = response.slice(-1) === '\n'
+
+    if (completed && !ended) {
+        switch(stage) {
+            case 0: if (response.indexOf('220') > -1) {
+                        // Connection Worked
+                        socket.write("EHLO " + params.options.fqdn + "\r\n", advanceToNextStage)
+                    }
+                    else{
+                        socket.end()
+                    }
+                    break;
+            case 1: if (response.indexOf('250') > -1) {
+                        // Connection Worked
+                        socket.write("MAIL FROM:<" + params.options.sender + ">\r\n", advanceToNextStage)
+                    }
+                    else{
+                        socket.end()
+                    }
+                    break;
+            case 2: if (response.indexOf('250') > -1) {
+                        // MAIL Worked
+                        socket.write("RCPT TO:<" + params.email + ">\r\n", advanceToNextStage)
+                    }
+                    else{
+                        socket.end()
+                    }
+                    break
+            case 3: if (response.indexOf('250') > -1 || (params.options.ignore && response.indexOf(params.options.ignore) > -1)) {
+                        // RCPT Worked
+                        success = true
+                    }
+                    advanceToNextStage()
+                    // close the connection cleanly.
+                    if(!ended) socket.write("QUIT\r\n")
+                    break
+            case 4:
+              ended = true
+              socket.end()
+        }
+    }
+    
+  })
+
+  socket.on('connect', function(data) {
+
+  })
+
+  socket.on('error', function(err) {
+    callback( err, { success: false, info: null, addr: params.email })
+  })
+
+  socket.on('end', function() {
+    callback(null, { success: success, info: (params.email + " is " + (success ? "a valid" : "an invalid") + " address"), addr: params.email })
+  })
+
+}
+
