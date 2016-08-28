@@ -86,7 +86,10 @@ export function verify(email,options,callback){
 }
 
 function startDNSQueries(params){
-  let domain = params.email.split(/[@]/)[1]
+  let domain = email.split(/[@]/).splice(-1)[0].toLowerCase()
+
+
+
   dns.resolveMx(domain,(err,addresses) => {
     if (err || (typeof addresses === 'undefined')) {
       params.callback(err, null);
@@ -95,19 +98,55 @@ function startDNSQueries(params){
       params.callback(null, { success: false, info: "No MX Records" });
     }
     else{
+
       params.addresses = addresses
+        // Find the lowest priority mail server
+        let priority = 10000;
+        let index = 0;
+        for (let i = 0 ; i < addresses.length ; i++) {
+            if (addresses[i].priority < priority) {
+                priority = addresses[i].priority;
+                index = i;
+            }
+        }
+        let smtp = addresses[index].exchange;
+        let stage = 0;
+
+        let net = require('net');
+        let socket = net.createConnection(options.port, smtp);
+        let success = false;
+        let tryagain = false;
+        let response = "";
+        let completed = false;
+        let calledback = false;
+        let ended = false;
+
+        if (options.timeout > 0) {
+          socket.setTimeout(options.timeout, function() {
+            if( !calledback ){
+              calledback = true;
+              callback(null,
+                       {
+                          success: false,
+                          info: "Connection Timed Out",
+                          addr: email
+                       });
+            }
+            socket.destroy()
+          });
+        }
 
       // Find the lowest priority mail server
       let priority = 10000,
           lowestPriorityIndex = 0
 
       for (let i = 0 ; i < addresses.length ; i++) {
-          if (addresses[i].priority < priority) {
-              priority = addresses[i].priority;
-              lowestPriorityIndex = i;
-          }
+        if (addresses[i].priority < priority) {
+            priority = addresses[i].priority
+            lowestPriorityIndex = i
+        }
       }
-
+        
       params.options.smtp = addresses[lowestPriorityIndex].exchange
 
       beginSMTPQueries(params)
@@ -146,50 +185,52 @@ function beginSMTPQueries(params){
   }
 
   socket.on('data', function(data) {
-    response += data.toString()
-    completed = response.slice(-1) === '\n'
+    response += data.toString();
+    completed = response.slice(-1) === '\n';
 
-    if (completed && !ended) {
+    if (completed) {
         switch(stage) {
-            case 0: if (response.indexOf('220') > -1) {
+            case 0: if (response.indexOf('220') > -1 && !ended) {
                         // Connection Worked
-                        socket.write("EHLO " + params.options.fqdn + "\r\n", advanceToNextStage)
+                        socket.write("EHLO "+options.fqdn+"\r\n",function() { stage++; response = ""; });
                     }
                     else{
-                        socket.end()
+                        if (response.indexOf('421') > -1 || response.indexOf('450') > -1 || response.indexOf('451') > -1)
+                            tryagain = true;
+                        socket.end();
                     }
                     break;
-            case 1: if (response.indexOf('250') > -1) {
+            case 1: if (response.indexOf('250') > -1 && !ended) {
                         // Connection Worked
-                        socket.write("MAIL FROM:<" + params.options.sender + ">\r\n", advanceToNextStage)
+                        socket.write("MAIL FROM:<"+options.sender+">\r\n",function() { stage++; response = ""; });
                     }
                     else{
-                        socket.end()
+                        socket.end();
                     }
                     break;
-            case 2: if (response.indexOf('250') > -1) {
+            case 2: if (response.indexOf('250') > -1 && !ended) {
                         // MAIL Worked
-                        socket.write("RCPT TO:<" + params.email + ">\r\n", advanceToNextStage)
+                        socket.write("RCPT TO:<" + email + ">\r\n",function() { stage++; response = ""; });
                     }
                     else{
-                        socket.end()
+                        socket.end();
                     }
-                    break
-            case 3: if (response.indexOf('250') > -1 || (params.options.ignore && response.indexOf(params.options.ignore) > -1)) {
+                    break;
+            case 3: if (response.indexOf('250') > -1 || (options.ignore && response.indexOf(options.ignore) > -1)) {
                         // RCPT Worked
-                        success = true
+                        success = true;
                     }
-                    advanceToNextStage()
+                    stage++;
+                    response = "";
                     // close the connection cleanly.
-                    if(!ended) socket.write("QUIT\r\n")
-                    break
+                    if(!ended) socket.write("QUIT\r\n");
+                    break;
             case 4:
-              ended = true
-              socket.end()
+              socket.end();
         }
+
     }
-    
-  })
+  }
 
   socket.on('connect', function(data) {
 
