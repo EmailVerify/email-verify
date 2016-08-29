@@ -37,7 +37,7 @@ describe('email-verify', function() {
       });
     });
     it('bad smtp port: should respond with an object where success is false', function(done) {
-      verifier.verify('rob@below.io', { port: 587 }, function (err, info) {
+      verifier.verify('rob@below.io', { port: 600 }, function (err, info) {
         assert(!info.success);
         done();
       });
