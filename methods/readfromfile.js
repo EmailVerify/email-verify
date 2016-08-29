@@ -1,30 +1,41 @@
-var fs = require('fs');
-var _ = require('lodash');
+let fs = require('fs')
 
 module.exports.getAddressFromTextFile = function(filepath) {
-  var file = { exist: true, extension: '' };
-  var extensionErrorMsg = "Sorry, you needed to put addresses list into plain text (*.txt) file." +
-                          " Separated each address by new line";
+  let file = { 
+    exist: true, 
+    extension: require('path').extname(filepath),
+    content: ''
+  }
 
-  file.exist = true;
-  file.extension = require('path').extname(filepath);
+  let extensionErrorMsg = 'Sorry, you needed to put addresses list into plain text (*.txt) file. Separated each address by new line'
 
-  if (file.extension !== '.txt') throw new Error(extensionErrorMsg);
+  if(file.extension !== '.txt') throw new Error(extensionErrorMsg)
 
   try {
-    var fileContent = fs.readFileSync(filepath, 'utf-8');
-  } catch (e) {
-    if (e.code === 'ENOENT') console.log('File not found!');
-    else console.log('Error: ', e);
+    file.content = fs.readFileSync(filepath, 'utf-8')
+  } 
+  catch (e) {
+    if (e.code === 'ENOENT') console.log('File not found!',e)
+    else console.log('Error: ', e)
     file.exist = false;
-  } finally {
+  } 
+  finally {
 
     if (!file.exist) {
-      console.log('Error, File not found!');
-    } else {
-      var addressList = fileContent.split("\n");
-      var addressesFiltered = _.without(addressList,'');
-      return addressesFiltered;
+      console.log('Error, File not found!')
+      return []
+    } 
+    else {
+      let addressList = file.content.split('\n'),
+          addressObject = {}
+
+      addressList.forEach((address)=>{
+        if(address.length > 0){
+          addressObject[address] = true
+        }
+      })
+
+      return Object.keys(addressObject)
     }
 
   }

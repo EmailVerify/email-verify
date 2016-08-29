@@ -40,7 +40,7 @@ function dnsConfig(options){
     else dns.setServers([options.dns])
   }
   catch(e){
-    throw new Error("Invalid DNS Options");
+    throw new Error('Invalid DNS Options');
   }
 }
 
@@ -50,6 +50,8 @@ function dnsConfig(options){
   email,callback (using default options, not advised)
 
   options,callback (using options.email for the email)
+
+  This is supporting the legacy (email,options,callback) as well as the (options,callback) that is promisify compatible
 
 */
 
@@ -76,7 +78,7 @@ module.exports.verify = function verify(email,options,callback){
   if( !params.options ) throw new Error(errors.missing.options)
   if( !params.callback ) throw new Error(errors.missing.callback)
 
-  if( !validator.validate(params.email) ) return params.callback(null, { success: false, info: "Invalid Email Structure", addr: email, params: params })
+  if( !validator.validate(params.email) ) return params.callback(null, { success: false, info: 'Invalid Email Structure', addr: email, params: params })
 
   if( params.options.dns ) dnsConfig(params.options)
 
@@ -94,7 +96,7 @@ function startDNSQueries(params){
       params.callback(err, null);
     }
     else if (addresses && addresses.length <= 0) {
-      params.callback(null, { success: false, info: "No MX Records" });
+      params.callback(null, { success: false, info: 'No MX Records' });
     }
     else{
 
@@ -144,7 +146,7 @@ function beginSMTPQueries(params){
 
   if( params.options.timeout > 0 ){
     socket.setTimeout(params.options.timeout,() => {
-      callback(null,{ success: false, info: "Connection Timed Out", addr: params.email })
+      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email })
       socket.destroy()
     })
   }
@@ -157,7 +159,7 @@ function beginSMTPQueries(params){
         switch(stage) {
             case 0: if (response.indexOf('220') > -1 && !ended) {
                         // Connection Worked
-                        socket.write("EHLO "+params.options.fqdn+"\r\n",function() { stage++; response = ""; });
+                        socket.write('EHLO '+params.options.fqdn+'\r\n',function() { stage++; response = ''; });
                     }
                     else{
                         if (response.indexOf('421') > -1 || response.indexOf('450') > -1 || response.indexOf('451') > -1)
@@ -167,7 +169,7 @@ function beginSMTPQueries(params){
                     break;
             case 1: if (response.indexOf('250') > -1 && !ended) {
                         // Connection Worked
-                        socket.write("MAIL FROM:<"+params.options.sender+">\r\n",function() { stage++; response = ""; });
+                        socket.write('MAIL FROM:<'+params.options.sender+'>\r\n',function() { stage++; response = ''; });
                     }
                     else{
                         socket.end();
@@ -175,7 +177,7 @@ function beginSMTPQueries(params){
                     break;
             case 2: if (response.indexOf('250') > -1 && !ended) {
                         // MAIL Worked
-                        socket.write("RCPT TO:<" + params.email + ">\r\n",function() { stage++; response = ""; });
+                        socket.write('RCPT TO:<' + params.email + '>\r\n',function() { stage++; response = ''; });
                     }
                     else{
                         socket.end();
@@ -186,9 +188,9 @@ function beginSMTPQueries(params){
                         success = true;
                     }
                     stage++;
-                    response = "";
+                    response = '';
                     // close the connection cleanly.
-                    if(!ended) socket.write("QUIT\r\n");
+                    if(!ended) socket.write('QUIT\r\n');
                     break;
             case 4:
               socket.end();
@@ -206,7 +208,7 @@ function beginSMTPQueries(params){
   })
 
   socket.on('end', function() {
-    callback(null, { success: success, info: (params.email + " is " + (success ? "a valid" : "an invalid") + " address"), addr: params.email })
+    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email })
   })
 
 }
