@@ -16,7 +16,7 @@ let addresses = [],
     port : 25,
     sender : 'name@example.org',
     fdqn : 'mail.example.org',
-    concurrency: 2
+    concurrency: 1
   }
 
 //todo: code refactoring
@@ -91,7 +91,7 @@ for (var i = 0 ; i < argv.length ; i++) {
   else if (argv[i] === '-file' || argv[i] === '--file'){
     // check argv filename supplied?
     if (!argv[i+1]) {
-      throw new Error('You must supplied the path to the file.')
+      throw new Error('You must supply the path to the file.')
     } else {
       getAddressFromTextFile(argv[i+1])
         .forEach(function (val, index, array) {
