@@ -89,7 +89,7 @@ The basic flow is as follows:
 
 This module has tests with Mocha. Run `npm test` and make sure you have a solid connection.
 
-Use:
+Use (also see the app.js file):
 
 ```
 var verifier = require('email-verify');
@@ -116,3 +116,7 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 0.0.14 -> 0.0.15 : prevent socket from writing after end event fires
 0.0.15 -> 0.0.16 : added an ignore option for ignoring greylisted responses
 0.0.16 -> 0.0.17 : sancowinx added a file option for the command line
+0.0.17 -> 0.0.18 : zh99998 added concurrency to the command line options by adding bluebird
+0.0.18 -> 0.1.0  : refactored the verify function to make it compatible with promisfy (bluebird)
+                   included changes from Bramzor to allow for greylisting rechecking and to allow for weird addresses more aligned to the RFCs
+                   removed the lodash dependency
