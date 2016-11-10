@@ -2,7 +2,8 @@
 
 let validator = require('email-validator'),
     dns = require('dns'),
-    net = require('net')
+    net = require('net'),
+    logger = require('./logger.js').logger
 
 const defaultOptions = {
   port: 25,
@@ -82,6 +83,8 @@ module.exports.verify = function verify(email,options,callback){
 
   if( params.options.dns ) dnsConfig(params.options)
 
+  logger.info("# Veryfing " + params.email)
+
   startDNSQueries(params)
 
 }
@@ -89,8 +92,7 @@ module.exports.verify = function verify(email,options,callback){
 function startDNSQueries(params){
   let domain = params.email.split(/[@]/).splice(-1)[0].toLowerCase()
 
-
-
+  logger.info("Resolving DNS... " + domain)
   dns.resolveMx(domain,(err,addresses) => {
     if (err || (typeof addresses === 'undefined')) {
       params.callback(err, null);
@@ -99,7 +101,6 @@ function startDNSQueries(params){
       params.callback(null, { success: false, info: 'No MX Records' });
     }
     else{
-
       params.addresses = addresses
 
       // Find the lowest priority mail server
@@ -110,11 +111,12 @@ function startDNSQueries(params){
         if (addresses[i].priority < priority) {
             priority = addresses[i].priority
             lowestPriorityIndex = i
+            logger.info('MX Records ' + JSON.stringify(addresses[i]))
         }
       }
 
       params.options.smtp = addresses[lowestPriorityIndex].exchange
-
+      logger.info("Choosing " + params.options.smtp + " for connection")
       beginSMTPQueries(params)
     }
 
@@ -131,6 +133,7 @@ function beginSMTPQueries(params){
       ended = false,
       tryagain = false
 
+  logger.info("Creating connection...")
   let socket = net.createConnection(params.options.port, params.options.smtp)
 
   let callback = (err,object) => {
@@ -154,12 +157,15 @@ function beginSMTPQueries(params){
   socket.on('data', function(data) {
     response += data.toString();
     completed = response.slice(-1) === '\n';
-
+    logger.info("Getting data...")
     if (completed) {
+        logger.info("RESPONSE: " + response)
         switch(stage) {
             case 0: if (response.indexOf('220') > -1 && !ended) {
                         // Connection Worked
-                        socket.write('EHLO '+params.options.fqdn+'\r\n',function() { stage++; response = ''; });
+                        var cmd = 'EHLO '+params.options.fqdn+'\r\n'
+                        logger.info(cmd)
+                        socket.write(cmd,function() { stage++; response = ''; });
                     }
                     else{
                         if (response.indexOf('421') > -1 || response.indexOf('450') > -1 || response.indexOf('451') > -1)
@@ -169,7 +175,9 @@ function beginSMTPQueries(params){
                     break;
             case 1: if (response.indexOf('250') > -1 && !ended) {
                         // Connection Worked
-                        socket.write('MAIL FROM:<'+params.options.sender+'>\r\n',function() { stage++; response = ''; });
+                        var cmd = 'MAIL FROM:<'+params.options.sender+'>\r\n'
+                        logger.info(cmd)
+                        socket.write(cmd,function() { stage++; response = ''; });
                     }
                     else{
                         socket.end();
@@ -177,7 +185,9 @@ function beginSMTPQueries(params){
                     break;
             case 2: if (response.indexOf('250') > -1 && !ended) {
                         // MAIL Worked
-                        socket.write('RCPT TO:<' + params.email + '>\r\n',function() { stage++; response = ''; });
+                        var cmd = 'RCPT TO:<' + params.email + '>\r\n'
+                        logger.info(cmd)
+                        socket.write(cmd,function() { stage++; response = ''; });
                     }
                     else{
                         socket.end();
@@ -190,7 +200,11 @@ function beginSMTPQueries(params){
                     stage++;
                     response = '';
                     // close the connection cleanly.
-                    if(!ended) socket.write('QUIT\r\n');
+                    if(!ended) {
+                      var cmd = 'QUIT\r\n'
+                      logger.info(cmd)
+                      socket.write(cmd);
+                    }
                     break;
             case 4:
               socket.end();
@@ -200,16 +214,17 @@ function beginSMTPQueries(params){
   })
 
   socket.on('connect', function(data) {
-
+    logger.info("Connected")
   })
 
   socket.on('error', function(err) {
+    logger.error("Connection error")
     callback( err, { success: false, info: null, addr: params.email })
   })
 
   socket.on('end', function() {
+    logger.info("Closing connection")
     callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email })
   })
 
 }
-
