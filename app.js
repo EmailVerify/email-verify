@@ -15,7 +15,7 @@ let addresses = [],
   options = {
     port : 25,
     sender : 'name@example.org',
-    fdqn : 'mail.example.org',
+    fqdn : 'mail.example.org',
     concurrency: 1
   }
 
@@ -77,7 +77,7 @@ for (var i = 0 ; i < argv.length ; i++) {
     options.timeout = parseInt(argv[++i])
   }
   else if (argv[i] === '-f' && argv[i+1]) {
-    options.fdqn = argv[++i]
+    options.fqdn = argv[++i]
   }
   else if (argv[i] === '-dns' && argv[i+1]) {
     options.dns = argv[++i]
