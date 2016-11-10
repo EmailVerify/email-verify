@@ -119,6 +119,7 @@ else {
   if(options.debug) {
     loggerOptions.enable()
     logger.info('DEBUG')
+    logger.info('OPTIONS: ' + JSON.stringify(options))
   }
   Promise.map(addresses, function(val) {
 

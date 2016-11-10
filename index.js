@@ -157,15 +157,14 @@ function beginSMTPQueries(params){
   socket.on('data', function(data) {
     response += data.toString();
     completed = response.slice(-1) === '\n';
-    logger.info("Getting data...")
     if (completed) {
-        logger.info("RESPONSE: " + response)
+        logger.info("SERVER: "+response)
         switch(stage) {
             case 0: if (response.indexOf('220') > -1 && !ended) {
                         // Connection Worked
-                        var cmd = 'EHLO '+params.options.fqdn+'\r\n'
-                        logger.info(cmd)
-                        socket.write(cmd,function() { stage++; response = ''; });
+                        var cmd = 'EHLO '+params.options.fqdn
+                        logger.info("CLIENT: "+cmd)
+                        socket.write(cmd+'\r\n',function() { stage++; response = ''; });
                     }
                     else{
                         if (response.indexOf('421') > -1 || response.indexOf('450') > -1 || response.indexOf('451') > -1)
@@ -175,9 +174,9 @@ function beginSMTPQueries(params){
                     break;
             case 1: if (response.indexOf('250') > -1 && !ended) {
                         // Connection Worked
-                        var cmd = 'MAIL FROM:<'+params.options.sender+'>\r\n'
-                        logger.info(cmd)
-                        socket.write(cmd,function() { stage++; response = ''; });
+                        var cmd = 'MAIL FROM:<'+params.options.sender+'>'
+                        logger.info("CLIENT: "+cmd)
+                        socket.write(cmd+'\r\n',function() { stage++; response = ''; });
                     }
                     else{
                         socket.end();
@@ -185,9 +184,9 @@ function beginSMTPQueries(params){
                     break;
             case 2: if (response.indexOf('250') > -1 && !ended) {
                         // MAIL Worked
-                        var cmd = 'RCPT TO:<' + params.email + '>\r\n'
-                        logger.info(cmd)
-                        socket.write(cmd,function() { stage++; response = ''; });
+                        var cmd = 'RCPT TO:<' + params.email + '>'
+                        logger.info("CLIENT: "+cmd)
+                        socket.write(cmd+'\r\n',function() { stage++; response = ''; });
                     }
                     else{
                         socket.end();
@@ -201,8 +200,8 @@ function beginSMTPQueries(params){
                     response = '';
                     // close the connection cleanly.
                     if(!ended) {
-                      var cmd = 'QUIT\r\n'
-                      logger.info(cmd)
+                      var cmd = 'QUIT'
+                      logger.info("CLIENT: "+cmd+'\r\n')
                       socket.write(cmd);
                     }
                     break;
