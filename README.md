@@ -68,7 +68,7 @@ The options are:
   port : integer, port to connect with defaults to 25
   sender : email, sender address, defaults to name@example.org
   timeout : integer, socket timeout defaults to 0 which is no timeout
-  fdqn : domain, used as part of the HELO, defaults to mail.example.org
+  fqdn : domain, used as part of the HELO, defaults to mail.example.org
   dns: ip address, or array of ip addresses (as strings), used to set the servers of the dns check,
   ignore: set an ending response code integer to ignore, such as 450 for greylisted emails
 }
@@ -124,3 +124,5 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 0.0.18 -> 0.1.0  : refactored the verify function to make it compatible with promisfy (bluebird)
                    included changes from Bramzor to allow for greylisting rechecking and to allow for weird addresses more aligned to the RFCs
                    removed the lodash dependency
+
+0.1.0 -> 0.1.1 : fones fixed a typo for the fqdn parameter and added some logging

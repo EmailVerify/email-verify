@@ -3,7 +3,9 @@
 let Promise = require('bluebird'),
     verify = Promise.promisify(require('./index.js').verify),
     argv = process.argv.slice(2),
-    getAddressFromTextFile = require('./methods/readfromfile.js').getAddressFromTextFile
+    getAddressFromTextFile = require('./methods/readfromfile.js').getAddressFromTextFile,
+    loggerOptions = require('./logger.js').loggerOptions,
+    logger = require('./logger.js').logger
 
 if (argv.length === 0) {
     throw new Error('You must provide one or more email addresses.')
@@ -16,7 +18,8 @@ let addresses = [],
     port : 25,
     sender : 'name@example.org',
     fqdn : 'mail.example.org',
-    concurrency: 1
+    concurrency: 1,
+    debug: false
   }
 
 //todo: code refactoring
@@ -85,6 +88,9 @@ for (var i = 0 ; i < argv.length ; i++) {
   else if (argv[i] === '-c' && argv[i+1]) {
     options.concurrency = parseInt(argv[++i])
   }
+  else if (argv[i] === '--debug' && argv[i+1]) {
+    options.debug = true
+  }
   else if (domain) {
     addresses.push(argv[i] + domain)
   }
@@ -110,14 +116,18 @@ if (err_msg) {
   console.log(err_msg)
 }
 else {
-  
+  if(options.debug) {
+    loggerOptions.enable()
+    logger.info('DEBUG')
+    logger.info('OPTIONS: ' + JSON.stringify(options))
+  }
   Promise.map(addresses, function(val) {
 
     let individualOptions = Object.assign({email:val},options)
 
     return verify(individualOptions)
       .then((info) => {
-        console.log(info.addr);
+        console.log(info);
       })
       .catch((err) => {
         console.log(err);
