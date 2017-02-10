@@ -27,6 +27,15 @@ const errors = {
   }
 }
 
+const infoCodes = {
+    finishedVerification: 1,
+    invalidEmailStructure: 2,
+    noMxRecords: 3,
+    SMTPConnectionTimeout: 4,
+    domainNotFound: 5,
+    SMTPConnectionError: 6
+}
+
 function optionsDefaults(options) {
   if( !options ) options = {}
   Object.keys(defaultOptions).forEach(function(key){
@@ -79,7 +88,7 @@ module.exports.verify = function verify(email,options,callback){
   if( !params.options ) throw new Error(errors.missing.options)
   if( !params.callback ) throw new Error(errors.missing.callback)
 
-  if( !validator.validate(params.email) ) return params.callback(null, { success: false, info: 'Invalid Email Structure', addr: email, params: params })
+  if( !validator.validate(params.email) ) return params.callback(null, { success: false, info: 'Invalid Email Structure', addr: email, params: params, code: infoCodes.invalidEmailStructure })
 
   if( params.options.dns ) dnsConfig(params.options)
 
@@ -89,16 +98,18 @@ module.exports.verify = function verify(email,options,callback){
 
 }
 
+module.exports.verifyCodes = infoCodes;
+
 function startDNSQueries(params){
   let domain = params.email.split(/[@]/).splice(-1)[0].toLowerCase()
 
   logger.info("Resolving DNS... " + domain)
   dns.resolveMx(domain,(err,addresses) => {
     if (err || (typeof addresses === 'undefined')) {
-      params.callback(err, null);
+      params.callback(err, { success: false, info: 'Domain not found', code: infoCodes.domainNotFound });
     }
     else if (addresses && addresses.length <= 0) {
-      params.callback(null, { success: false, info: 'No MX Records' });
+      params.callback(null, { success: false, info: 'No MX Records', code: infoCodes.noMxRecords });
     }
     else{
       params.addresses = addresses
@@ -149,7 +160,7 @@ function beginSMTPQueries(params){
 
   if( params.options.timeout > 0 ){
     socket.setTimeout(params.options.timeout,() => {
-      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email })
+      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email, code: infoCodes.SMTPConnectionTimeout })
       socket.destroy()
     })
   }
@@ -218,12 +229,11 @@ function beginSMTPQueries(params){
 
   socket.on('error', function(err) {
     logger.error("Connection error")
-    callback( err, { success: false, info: null, addr: params.email })
+    callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError })
   })
 
   socket.on('end', function() {
     logger.info("Closing connection")
-    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email })
+    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification })
   })
-
 }
