@@ -160,7 +160,7 @@ function beginSMTPQueries(params){
 
   if( params.options.timeout > 0 ){
     socket.setTimeout(params.options.timeout,() => {
-      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email, code: infoCodes.SMTPConnectionTimeout })
+      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email, code: infoCodes.SMTPConnectionTimeout, tryagain:tryagain })
       socket.destroy()
     })
   }
@@ -229,11 +229,11 @@ function beginSMTPQueries(params){
 
   socket.on('error', function(err) {
     logger.error("Connection error")
-    callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError })
+    callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError, tryagain:tryagain })
   })
 
   socket.on('end', function() {
     logger.info("Closing connection")
-    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification })
+    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification, tryagain:tryagain })
   })
 }
