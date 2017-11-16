@@ -59,7 +59,6 @@ The callback is a function(err, info) that has an info object:
   info: string
   addr: the address being verified
   code: info code saying things on verification status
-  codeDescription: what does info code means
   banner: how server advertize itself
 }
 ```
@@ -150,4 +149,4 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
                    removed the lodash dependency
 
 0.1.0 -> 0.1.1   : fones fixed a typo for the fqdn parameter and added some logging
-0.1.1 -> 0.2.0   : provide banner object and code description in callback, use more actual dependencies, properly call mocha for unit tests
+0.1.1 -> 0.2.0   : provide banner object in callback, use more actual dependencies, properly call mocha for unit tests
