@@ -4,17 +4,17 @@
   "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
-    "email-validator": "1.0.1",
-    "bluebird": "latest"
+    "bluebird": "^3.5.1",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "validator": "^9.1.1"
   },
-  "devDependencies": {
-    "mocha": "1.21.5"
-  },
+  "devDependencies": {},
   "bugs": {
     "url": "https://github.com/bighappyworld/email-verify/issues"
   },
   "scripts": {
-    "test": "node test"
+    "test": "nyc --reporter=lcov mocha ./test/*.test.js"
   },
   "repository": {
     "type": "git",

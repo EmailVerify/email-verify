@@ -13,3 +13,10 @@ pids
 
 # Text file containing address (Testing)
 *.txt
+
+# WebStrom editor
+.idea/
+
+# unit tests coverage directory
+.nyc_output/
+coverage/
