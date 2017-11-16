@@ -149,4 +149,5 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
                    removed the lodash dependency
 
 0.1.0 -> 0.1.1   : fones fixed a typo for the fqdn parameter and added some logging
+
 0.1.1 -> 0.2.0   : provide banner object in callback, use more actual dependencies, properly call mocha for unit tests
