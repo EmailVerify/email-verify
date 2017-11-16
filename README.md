@@ -1,6 +1,6 @@
-#SMTP Email Verification
+# SMTP Email Verification
 
-###Install
+### Install
 
 ```
 npm install -g email-verify
@@ -10,7 +10,7 @@ npm install -g email-verify
 
 If you upgrade to > 0.0.12 from a previous version, you will need to make minor changes in your code. The callback was made to be error first.
 
-###Usage
+### Usage
 You can use it stand alone with the email-verify command and as many email addresses as you want to check.
 
 ```
@@ -51,17 +51,20 @@ The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender
 
 The module has one asynchronous method: verify( email, _options_, callback )
 
-###Callback
+### Callback
 The callback is a function(err, info) that has an info object:
 ```
 {
   success: boolean
   info: string
   addr: the address being verified
+  code: info code saying things on verification status
+  codeDescription: what does info code means
+  banner: how server advertize itself
 }
 ```
 
-###Options
+### Options
 The options are:
 ```
 {
@@ -74,7 +77,7 @@ The options are:
 }
 ```
 
-###Flow
+### Flow
 
 The basic flow is as follows:
 
