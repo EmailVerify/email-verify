@@ -128,7 +128,6 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 ```
 
 ### Changes
-
 0.0.10 -> 0.0.11 : changed "CR" to "CRLF" as per SMTP Standard. Added a QUIT message so that the connection is closed from both ends. (thanks @Nomon)
 
 0.0.11 -> 0.0.12 : some refactoring and styles from james075. important to note, the callback order was changed to be error first. if you upgrade to here, you will need to modify your existing code.
@@ -150,4 +149,5 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
                    included changes from Bramzor to allow for greylisting rechecking and to allow for weird addresses more aligned to the RFCs
                    removed the lodash dependency
 
-0.1.0 -> 0.1.1 : fones fixed a typo for the fqdn parameter and added some logging
+0.1.0 -> 0.1.1   : fones fixed a typo for the fqdn parameter and added some logging
+0.1.1 -> 0.2.0   : provide banner object and code description in callback, use more actual dependencies, properly call mocha for unit tests
