@@ -102,24 +102,24 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
   else{
     console.log( "Success (T/F): " + info.success );
     console.log( "Info: " + info.info );
-    
+
     //Info object returns a code which representing a state of validation:
-    
+
     //Connected to SMTP server and finished email verification
     console.log(info.code === infoCodes.finishedVerification);
-    
+
     //Domain not found
     console.log(info.code === infoCodes.domainNotFound);
-    
+
     //Email is not valid
     console.log(info.code === infoCodes.invalidEmailStructure);
-    
+
     //No MX record in domain name
     console.log(info.code === infoCodes.noMxRecords);
-    
+
     //SMTP connection timeout
     console.log(info.code === infoCodes.SMTPConnectionTimeout);
-    
+
     //SMTP connection error
     console.log(info.code === infoCodes.SMTPConnectionError)
   }
@@ -151,3 +151,5 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 0.1.0 -> 0.1.1   : fones fixed a typo for the fqdn parameter and added some logging
 
 0.1.1 -> 0.2.0   : provide banner object in callback, use more actual dependencies, properly call mocha for unit tests
+
+0.2.0 -> 0.2.1   : derain adding a return code, robert-irribarren adding try-again / fixes, bryant1410 fixing markdown thanks all! sorry for the late merges!
