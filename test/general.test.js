@@ -12,6 +12,7 @@ describe('email-verify', function() {
       verifier.verify('support@github.com', function (err, info) {
         assert(info.success);
         assert(info.code === verifyCodes.finishedVerification);
+        assert(typeof info.banner === 'string');
         done();
       });
     });

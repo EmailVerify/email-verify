@@ -1,6 +1,6 @@
 'use strict'
 
-let validator = require('email-validator'),
+let validator = require('validator').isEmail,
     dns = require('dns'),
     net = require('net'),
     logger = require('./logger.js').logger
@@ -88,7 +88,7 @@ module.exports.verify = function verify(email,options,callback){
   if( !params.options ) throw new Error(errors.missing.options)
   if( !params.callback ) throw new Error(errors.missing.callback)
 
-  if( !validator.validate(params.email) ) return params.callback(null, { success: false, info: 'Invalid Email Structure', addr: email, params: params, code: infoCodes.invalidEmailStructure })
+  if( !validator(params.email) ) return params.callback(null, { success: false, info: 'Invalid Email Structure', addr: email, params: params, code: infoCodes.invalidEmailStructure })
 
   if( params.options.dns ) dnsConfig(params.options)
 
@@ -142,7 +142,8 @@ function beginSMTPQueries(params){
       response = '',
       completed = false,
       ended = false,
-      tryagain = false
+      tryagain = false,
+      banner = ''
 
   logger.info("Creating connection...")
   let socket = net.createConnection(params.options.port, params.options.smtp)
@@ -173,6 +174,7 @@ function beginSMTPQueries(params){
         switch(stage) {
             case 0: if (response.indexOf('220') > -1 && !ended) {
                         // Connection Worked
+                        banner = response
                         var cmd = 'EHLO '+params.options.fqdn+'\r\n'
                         logger.client(cmd)
                         socket.write(cmd,function() { stage++; response = ''; });
@@ -223,17 +225,17 @@ function beginSMTPQueries(params){
     }
   })
 
-  socket.on('connect', function(data) {
+  socket.once('connect', function(data) {
     logger.info("Connected")
   })
 
-  socket.on('error', function(err) {
+  socket.once('error', function(err) {
     logger.error("Connection error")
     callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError, tryagain:tryagain })
   })
 
-  socket.on('end', function() {
+  socket.once('end', function() {
     logger.info("Closing connection")
-    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification, tryagain:tryagain })
+    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification, tryagain:tryagain, banner:banner })
   })
 }
