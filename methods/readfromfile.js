@@ -1,3 +1,5 @@
+'use strict';
+
 let fs = require('fs')
 
 module.exports.getAddressFromTextFile = function(filepath) {

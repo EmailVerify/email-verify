@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 let Promise = require('bluebird'),
     verify = Promise.promisify(require('./index.js').verify),
     argv = process.argv.slice(2),
