@@ -1,6 +1,6 @@
 {
   "name": "email-verify",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
@@ -24,7 +24,20 @@
   "bin": {
     "email-verify": "./app.js"
   },
-  "author": "Robert Oaks <rob@below.io> (http://below.io/)",
+  "author": "Robert Oaks <robert.w.oaks@gmail.com> (https://github.com/bighappyworld)",
+  "contributors": [
+    "Anatolij Ostroumov <ostroumov095@gmail.com> (https://github.com/vodolaz095)",
+    "robert-irribarren <robertirribarren@gmail.com> (https://github.com/robert-irribarren)",
+    "Kirill Beresnev <derainberk@gmail.com> (https://github.com/DeRain)",
+    "Santiago Castro <santi.1410@hotmail.com> (https://github.com/bryant1410)",
+    "Fones <ja@fones.pl> (https://github.com/fones)",
+    "Bramzor <bramverdonck@telenet.be> (https://github.com/Bramzor)",
+    "zh99998 <zh99998@gmail.com> (https://github.com/zh99998)",
+    "sancowinx <jm-sarn@hotmail.com> (https://github.com/sancowinx)",
+    "Martin Edwards <martin@brilliantnoise.com> (https://github.com/mledwards)",
+    "james075 <james.heng@epitech.eu> (https://github.com/james075)",
+    "Matti Savolainen <matti@applifier.com> (https://github.com/Nomon)"
+  ],
   "license": "ISC",
   "keywords": [
     "email",

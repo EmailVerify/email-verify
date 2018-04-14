@@ -163,7 +163,7 @@ function beginSMTPQueries(params){
 
   if( params.options.timeout > 0 ){
     socket.setTimeout(params.options.timeout,() => {
-      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email, code: infoCodes.SMTPConnectionTimeout })
+      callback(null,{ success: false, info: 'Connection Timed Out', addr: params.email, code: infoCodes.SMTPConnectionTimeout, tryagain:tryagain })
       socket.destroy()
     })
   }
