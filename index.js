@@ -248,7 +248,7 @@ function beginSMTPQueries(params){
     if (tm) {
       clearTimeout(tm)
     }
-    callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError })
+    callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError, tryagain:tryagain })
   })
 
   socket.once('end', function() {
@@ -256,6 +256,6 @@ function beginSMTPQueries(params){
     if (tm) {
       clearTimeout(tm)
     }
-    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification, banner:banner })
+    callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification, tryagain:tryagain, banner:banner })
   })
 }
