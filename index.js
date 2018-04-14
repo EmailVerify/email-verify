@@ -9,6 +9,7 @@ const defaultOptions = {
   port: 25,
   sender: 'name@example.org',
   timeout: 0,
+  smtpTimeout: 30000,
   fqdn: 'mail.example.org',
   ignore: false
 }
@@ -33,7 +34,8 @@ const infoCodes = {
     noMxRecords: 3,
     SMTPConnectionTimeout: 4,
     domainNotFound: 5,
-    SMTPConnectionError: 6
+    SMTPConnectionError: 6,
+    SMTPWorksSlow: 7
 }
 
 function optionsDefaults(options) {
@@ -145,7 +147,7 @@ function beginSMTPQueries(params){
       tryagain = false,
       banner = ''
 
-  logger.info("Creating connection...")
+  logger.info('Creating connection...')
   let socket = net.createConnection(params.options.port, params.options.smtp)
 
   let callback = (err,object) => {
@@ -225,17 +227,35 @@ function beginSMTPQueries(params){
     }
   })
 
+  let tm
+
   socket.once('connect', function(data) {
     logger.info("Connected")
+    tm = setTimeout(function () {
+      logger.error('SMTP works very slow')
+      socket.end();
+      callback( null, {
+        success: false,
+        info: 'SMTP works very slow',
+        addr: params.email,
+        code: infoCodes.SMTPWorksSlow
+      })
+    }, params.options.smtpTimeout)
   })
 
   socket.once('error', function(err) {
     logger.error("Connection error")
+    if (tm) {
+      clearTimeout(tm)
+    }
     callback( err, { success: false, info: 'SMTP connection error', addr: params.email, code: infoCodes.SMTPConnectionError })
   })
 
   socket.once('end', function() {
     logger.info("Closing connection")
+    if (tm) {
+      clearTimeout(tm)
+    }
     callback(null, { success: success, info: (params.email + ' is ' + (success ? 'a valid' : 'an invalid') + ' address'), addr: params.email, code: infoCodes.finishedVerification, banner:banner })
   })
 }
