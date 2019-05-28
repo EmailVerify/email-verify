@@ -95,7 +95,7 @@ Use (also see the app.js file):
 
 ```javascript
 var verifier = require('email-verify');
-var infoCodes = verifier.infoCodes;
+var verifyCodes = verifier.verifyCodes;
 
 verifier.verify( 'anemail@domain.com', function( err, info ){
   if( err ) console.log(err);
@@ -106,22 +106,22 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
     //Info object returns a code which representing a state of validation:
 
     //Connected to SMTP server and finished email verification
-    console.log(info.code === infoCodes.finishedVerification);
+    console.log(info.code === verifyCodes.finishedVerification);
 
     //Domain not found
-    console.log(info.code === infoCodes.domainNotFound);
+    console.log(info.code === verifyCodes.domainNotFound);
 
     //Email is not valid
-    console.log(info.code === infoCodes.invalidEmailStructure);
+    console.log(info.code === verifyCodes.invalidEmailStructure);
 
     //No MX record in domain name
-    console.log(info.code === infoCodes.noMxRecords);
+    console.log(info.code === verifyCodes.noMxRecords);
 
     //SMTP connection timeout
-    console.log(info.code === infoCodes.SMTPConnectionTimeout);
+    console.log(info.code === verifyCodes.SMTPConnectionTimeout);
 
     //SMTP connection error
-    console.log(info.code === infoCodes.SMTPConnectionError)
+    console.log(info.code === verifyCodes.SMTPConnectionError)
   }
 });
 ```
