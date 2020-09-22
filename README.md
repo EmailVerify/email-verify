@@ -3,7 +3,7 @@
 ### Install
 
 ```
-npm install -g email-verify
+npm install -g @digitalroute/email-verify
 ```
 
 #### Important Note
@@ -11,6 +11,7 @@ npm install -g email-verify
 If you upgrade to > 0.0.12 from a previous version, you will need to make minor changes in your code. The callback was made to be error first.
 
 ### Usage
+
 You can use it stand alone with the email-verify command and as many email addresses as you want to check.
 
 ```
@@ -47,12 +48,12 @@ Other options supported are -p _port_, -t _timeout_, -sd _sender@email.com_, -f 
 
 The FDQN is used on the first HELO of the SMTP protocol. Defaults for the sender are name@example.org and default for the FDQN is mail.example.org. Strongly suggested that you change these. (Previous ones used my email / domain, just removed that)
 
-
-
 The module has one asynchronous method: verify( email, _options_, callback )
 
 ### Callback
+
 The callback is a function(err, info) that has an info object:
+
 ```
 {
   success: boolean
@@ -64,7 +65,9 @@ The callback is a function(err, info) that has an info object:
 ```
 
 ### Options
+
 The options are:
+
 ```
 {
   port : integer, port to connect with defaults to 25
@@ -94,14 +97,14 @@ This module has tests with Mocha. Run `npm test` and make sure you have a solid 
 Use (also see the app.js file):
 
 ```javascript
-var verifier = require('email-verify');
+var verifier = require("email-verify");
 var infoCodes = verifier.infoCodes;
 
-verifier.verify( 'anemail@domain.com', function( err, info ){
-  if( err ) console.log(err);
-  else{
-    console.log( "Success (T/F): " + info.success );
-    console.log( "Info: " + info.info );
+verifier.verify("anemail@domain.com", function (err, info) {
+  if (err) console.log(err);
+  else {
+    console.log("Success (T/F): " + info.success);
+    console.log("Info: " + info.info);
 
     //Info object returns a code which representing a state of validation:
 
@@ -121,12 +124,13 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
     console.log(info.code === infoCodes.SMTPConnectionTimeout);
 
     //SMTP connection error
-    console.log(info.code === infoCodes.SMTPConnectionError)
+    console.log(info.code === infoCodes.SMTPConnectionError);
   }
 });
 ```
 
 ### Changes
+
 0.0.10 -> 0.0.11 : changed "CR" to "CRLF" as per SMTP Standard. Added a QUIT message so that the connection is closed from both ends. (thanks @Nomon)
 
 0.0.11 -> 0.0.12 : some refactoring and styles from james075. important to note, the callback order was changed to be error first. if you upgrade to here, you will need to modify your existing code.
@@ -134,7 +138,7 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 0.0.12 -> 0.0.13 : fix cli -t timeout option
 
 0.0.13 -> 0.0.14 : fix on error callback order
-                   added the capability to specify the DNS servers for the MX record checking programatically and via cli
+added the capability to specify the DNS servers for the MX record checking programatically and via cli
 
 0.0.14 -> 0.0.15 : prevent socket from writing after end event fires
 
@@ -144,12 +148,12 @@ verifier.verify( 'anemail@domain.com', function( err, info ){
 
 0.0.17 -> 0.0.18 : zh99998 added concurrency to the command line options by adding bluebird
 
-0.0.18 -> 0.1.0  : refactored the verify function to make it compatible with promisfy (bluebird)
-                   included changes from Bramzor to allow for greylisting rechecking and to allow for weird addresses more aligned to the RFCs
-                   removed the lodash dependency
+0.0.18 -> 0.1.0 : refactored the verify function to make it compatible with promisfy (bluebird)
+included changes from Bramzor to allow for greylisting rechecking and to allow for weird addresses more aligned to the RFCs
+removed the lodash dependency
 
-0.1.0 -> 0.1.1   : fones fixed a typo for the fqdn parameter and added some logging
+0.1.0 -> 0.1.1 : fones fixed a typo for the fqdn parameter and added some logging
 
-0.1.1 -> 0.2.0   : provide banner object in callback, use more actual dependencies, properly call mocha for unit tests
+0.1.1 -> 0.2.0 : provide banner object in callback, use more actual dependencies, properly call mocha for unit tests
 
-0.2.0 -> 0.2.1   : derain adding a return code, robert-irribarren adding try-again / fixes, bryant1410 fixing markdown thanks all! sorry for the late merges!
+0.2.0 -> 0.2.1 : derain adding a return code, robert-irribarren adding try-again / fixes, bryant1410 fixing markdown thanks all! sorry for the late merges!
