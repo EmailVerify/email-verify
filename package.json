@@ -5,11 +5,12 @@
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.5.1",
-    "mocha": "^4.0.1",
-    "nyc": "^11.3.0",
     "validator": "^9.1.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^4.0.1",
+    "nyc": "^15.1.0"
+  },
   "bugs": {
     "url": "https://github.com/bighappyworld/email-verify/issues"
   },
