@@ -157,3 +157,5 @@ removed the lodash dependency
 0.1.1 -> 0.2.0 : provide banner object in callback, use more actual dependencies, properly call mocha for unit tests
 
 0.2.0 -> 0.2.1 : derain adding a return code, robert-irribarren adding try-again / fixes, bryant1410 fixing markdown thanks all! sorry for the late merges!
+
+0.2.1 +> 0.2.2 : Fork to @digitalroute/email-verify repo and security vulnerabilities fixes.
