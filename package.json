@@ -1,6 +1,6 @@
 {
-  "name": "email-verify",
-  "version": "0.2.1",
+  "name": "@dotintent/email-verify",
+  "version": "0.3.0",
   "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
