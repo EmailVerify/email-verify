@@ -11,14 +11,17 @@
   },
   "devDependencies": {},
   "bugs": {
-    "url": "https://github.com/bighappyworld/email-verify/issues"
+    "url": "https://github.com/dotintent/email-verify/issues"
+  },
+  "publishConfig": {
+    "access": "restricted"
   },
   "scripts": {
     "test": "nyc --reporter=lcov mocha ./test/*.test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bighappyworld/email-verify"
+    "url": "https://github.com/dotintent/email-verify"
   },
   "preferGlobal": true,
   "bin": {

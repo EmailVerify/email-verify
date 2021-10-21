@@ -1,3 +1,5 @@
+  :information_source: This repo is a fork of original package described below. Since the original repo was abandoned by its author, it had many vulnerabilities related to outdated packages. Only modification created by this fork is updating all of the dependencies to get rid of security-related issues.
+
 # SMTP Email Verification
 
 ### Install
