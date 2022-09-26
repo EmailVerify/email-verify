@@ -1,30 +1,30 @@
 {
-  "name": "email-verify",
-  "version": "0.2.1",
+  "name": "@gradeup/email-verify",
+  "version": "0.2.2",
   "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.5.1",
     "mocha": "^4.0.1",
-    "nyc": "^11.3.0",
+    "nyc": "^15.1.0",
     "validator": "^9.1.1"
   },
   "devDependencies": {},
   "bugs": {
-    "url": "https://github.com/bighappyworld/email-verify/issues"
+    "url": "https://github.com/gradeup/email-verify/issues"
   },
   "scripts": {
     "test": "nyc --reporter=lcov mocha ./test/*.test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bighappyworld/email-verify"
+    "url": "https://github.com/gradeup/email-verify"
   },
   "preferGlobal": true,
   "bin": {
     "email-verify": "./app.js"
   },
-  "author": "Robert Oaks <robert.w.oaks@gmail.com> (https://github.com/bighappyworld)",
+  "author": "Arpit Gupta <arpit.gupta@gradeup.co> (https://github.com/arpit27gupta)",
   "contributors": [
     "Anatolij Ostroumov <ostroumov095@gmail.com> (https://github.com/vodolaz095)",
     "robert-irribarren <robertirribarren@gmail.com> (https://github.com/robert-irribarren)",
