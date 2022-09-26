@@ -1,5 +1,12 @@
 # SMTP Email Verification
 
+### Note
+
+```
+Forked from https://github.com/EmailVerify/email-verify.git. This package is not actively maintained.
+```
+
+
 ### Install
 
 ```
