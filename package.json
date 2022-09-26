@@ -25,6 +25,9 @@
     "email-verify": "./app.js"
   },
   "author": "Arpit Gupta <arpit.gupta@gradeup.co> (https://github.com/arpit27gupta)",
+  "publishConfig": {
+		"access": "public"
+	},
   "contributors": [
     "Anatolij Ostroumov <ostroumov095@gmail.com> (https://github.com/vodolaz095)",
     "robert-irribarren <robertirribarren@gmail.com> (https://github.com/robert-irribarren)",
