@@ -5,11 +5,12 @@
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.5.1",
-    "mocha": "^4.0.1",
-    "nyc": "^15.1.0",
-    "validator": "^9.1.1"
+    "validator": "^13.7.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0"
+  },
   "bugs": {
     "url": "https://github.com/gradeup/email-verify/issues"
   },
@@ -26,8 +27,8 @@
   },
   "author": "Arpit Gupta <arpit.gupta@gradeup.co> (https://github.com/arpit27gupta)",
   "publishConfig": {
-		"access": "public"
-	},
+    "access": "public"
+  },
   "contributors": [
     "Anatolij Ostroumov <ostroumov095@gmail.com> (https://github.com/vodolaz095)",
     "robert-irribarren <robertirribarren@gmail.com> (https://github.com/robert-irribarren)",
