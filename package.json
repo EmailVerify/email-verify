@@ -5,10 +5,10 @@
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.5.1",
-    "validator": "^9.1.1"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
-    "mocha": "^4.0.1",
+    "mocha": "^10.2.0",
     "nyc": "^15.1.0"
   },
   "bugs": {
