@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "mocha": "^10.2.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "semantic-release": "^17.4.3"
   },
   "bugs": {
     "url": "https://github.com/digitalroute/email-verify/issues"
