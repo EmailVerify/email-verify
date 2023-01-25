@@ -27,7 +27,8 @@
   },
   "author": "Arpit Gupta <arpit.gupta@gradeup.co> (https://github.com/arpit27gupta)",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
   },
   "contributors": [
     "Anatolij Ostroumov <ostroumov095@gmail.com> (https://github.com/vodolaz095)",
