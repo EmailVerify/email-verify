@@ -1,6 +1,6 @@
 {
   "name": "@gradeup/email-verify",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "A tool to verify an email address exits via SMTP",
   "main": "index.js",
   "dependencies": {
